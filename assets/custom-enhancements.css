@@ -45,18 +45,25 @@ body {
 }
 
 .header__brand-icon {
-  width: 36px !important;
-  height: 36px !important;
+  width: 40px !important;
+  height: 40px !important;
   object-fit: contain;
   flex-shrink: 0;
   display: block !important;
+  filter: drop-shadow(0 3px 10px rgba(255, 56, 56, 0.35));
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.header__heading-link:hover .header__brand-icon {
+  transform: rotate(-3deg) scale(1.08);
+  filter: drop-shadow(0 4px 14px rgba(255, 56, 56, 0.6));
 }
 
 .header__brand-text {
-  font-size: 2.2rem !important;
+  font-size: 2.4rem !important;
   font-weight: 900 !important;
-  letter-spacing: 0.04em !important;
-  color: #111827 !important;
+  letter-spacing: 0.06em !important;
+  color: #0f172a !important;
   line-height: 1 !important;
   text-transform: uppercase !important;
   display: inline-flex !important;

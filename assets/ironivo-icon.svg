@@ -1,20 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
   <defs>
-    <linearGradient id="ironivoGradIcon" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff4757" />
-      <stop offset="100%" stop-color="#ff6b81" />
+    <!-- Titanium Bevel Gradients -->
+    <linearGradient id="tiDarkIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#374151" />
+      <stop offset="50%" stop-color="#1f2937" />
+      <stop offset="100%" stop-color="#111827" />
     </linearGradient>
-    <linearGradient id="ironivoDarkIcon" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#111827" />
+    <linearGradient id="tiLightIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9ca3af" />
+      <stop offset="50%" stop-color="#4b5563" />
       <stop offset="100%" stop-color="#1f2937" />
     </linearGradient>
+    <linearGradient id="rubyGlowIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff3838" />
+      <stop offset="40%" stop-color="#ff4d4d" />
+      <stop offset="100%" stop-color="#b30000" />
+    </linearGradient>
+    <linearGradient id="bladeGradIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3f4f6" />
+      <stop offset="40%" stop-color="#9ca3af" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <filter id="crimsonNeonIcon" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#ff3838" flood-opacity="0.6"/>
+    </filter>
   </defs>
-  <!-- Outer Shield / Hex Ring -->
-  <path d="M24 2 L42 12 V36 L24 46 L6 36 V12 Z" fill="url(#ironivoDarkIcon)" stroke="#111827" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Outer Shield Frame -->
+  <path d="M24 2 L44 11 L41 33 L24 46 L7 33 L4 11 Z" fill="url(#tiDarkIcon)" stroke="#111827" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Outer Rim Highlight -->
+  <path d="M24 4 L42 12 L39 32 L24 44 L9 32 L6 12 Z" stroke="url(#tiLightIcon)" stroke-width="1.5" fill="none" opacity="0.8"/>
+
+  <!-- Glowing Ruby Facets Core -->
+  <g filter="url(#crimsonNeonIcon)">
+    <path d="M24 8 L37 15 L35 30 L24 40 L13 30 L11 15 Z" fill="url(#rubyGlowIcon)"/>
+    <path d="M24 8 L24 40" stroke="#ff8080" stroke-width="1" opacity="0.6"/>
+    <path d="M11 15 L35 30" stroke="#ff8080" stroke-width="0.8" opacity="0.5"/>
+    <path d="M37 15 L13 30" stroke="#ff8080" stroke-width="0.8" opacity="0.5"/>
+  </g>
+
+  <!-- Cutting Titanium Power Blade / Stylized "I" Spear -->
+  <path d="M36 4 L14 26 H23 L13 44 L30 22 H21 L36 4 Z" fill="url(#bladeGradIcon)" stroke="#111827" stroke-width="1" stroke-linejoin="round"/>
   
-  <!-- Dynamic Power Grip / Iron Bolt Accent -->
-  <path d="M22 10 L14 26 H24 L22 38 L34 22 H24 Z" fill="url(#ironivoGradIcon)" />
-  
-  <!-- Precision Accent Dot -->
-  <circle cx="34" cy="14" r="3" fill="#ff4757" />
+  <!-- Specular Highlight Spark -->
+  <circle cx="36" cy="4" r="1.5" fill="#ffffff"/>
 </svg>
