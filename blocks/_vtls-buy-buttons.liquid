@@ -1,0 +1,812 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'vtls-pi-form-' | append: section.id
+  assign d_added = 'general.cart.item_added' | t
+  assign vtls_probe = d_added | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_added = 'Added to cart'
+  endif
+  assign d_atc = 'products.product.add_to_cart' | t
+  assign vtls_probe = d_atc | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_atc = 'Add to cart'
+  endif
+  assign d_soldout = 'products.product.sold_out' | t
+  assign vtls_probe = d_soldout | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_soldout = 'Sold out'
+  endif
+  assign d_unavailable = 'products.product.unavailable' | t
+  assign vtls_probe = d_unavailable | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_unavailable = 'Unavailable'
+  endif
+  assign d_view_cart = 'sections.cart_notification.view_cart' | t
+  assign vtls_probe = d_view_cart | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_view_cart = 'View cart'
+  endif
+  assign d_cart_error = 'sections.cart.cart_error' | t
+  assign vtls_probe = d_cart_error | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_cart_error = 'Could not add to cart.'
+  endif
+  # Gift-card recipient + local pickup labels (Horizon parity). Plain English
+  # fallbacks for now; wired to translations in a later pass.
+  assign d_gc_legend = 'Delivery'
+  assign d_gc_self = 'Send to myself'
+  assign d_gc_gift = 'Send as a gift'
+  assign d_gc_email = 'Recipient email'
+  assign d_gc_name = 'Recipient name (optional)'
+  assign d_gc_message = 'Message (optional)'
+  assign d_gc_sendon = 'Send on (optional)'
+  assign d_pickup_available = 'Pickup available at'
+  assign d_pickup_unavailable = 'Pickup currently unavailable at'
+-%}
+
+{%- liquid
+  assign atc_label = d_atc
+  assign soldout_label = d_soldout
+  assign unavailable_label = d_unavailable
+  assign added_label = d_added
+-%}
+{%- liquid
+  comment
+    ATC button styling — port of the pagegen-atc-button app block, folded
+    into this block so the button carries its own styling settings (the
+    standalone "ATC button styling" block is gone). The selector targets
+    this section's own ATC button directly (no :has()/!important
+    gymnastics); the doubled class bumps specificity, so once a
+    background is chosen these declarations win over both the section
+    defaults and the simple Colors settings (atc_background /
+    atc_text_color) above. The rule deliberately matches [disabled] too:
+    the runtime disables the button during the in-flight add and the
+    variant-switch window, and scoping to :not([disabled]) made every
+    such lock flash the theme's .button colors (feedback 2026-08-06) —
+    disabled states differ by opacity only (section base CSS).
+  endcomment
+  assign atcs_sel = '#vtls-pi-' | append: section.id | append: ' .vtls-pi__atc'
+  assign atcs_lbl = '#vtls-pi-' | append: section.id | append: ' [data-vtls-atc-text]'
+  assign atcs_icon_path = ''
+  assign atcs_icon_stroke = false
+  case block.settings.button_icon
+    when 'bag'
+      assign atcs_icon_path = 'M7 7V6a5 5 0 0 1 10 0v1h2.2l.8 13.2A1.8 1.8 0 0 1 18.2 22H5.8A1.8 1.8 0 0 1 4 20.2L4.8 7H7zm2 0h6V6a3 3 0 0 0-6 0v1z'
+    when 'bag_plus'
+      comment
+        Horizon-look bag+ (own geometry — Horizon's license bars reuse):
+        outlined bag with the bottom-right corner left open and the plus
+        breaking through the edge. Stroke-rendered, unlike the filled set.
+      endcomment
+      assign atcs_icon_path = 'M9 8V7a3 3 0 0 1 6 0v1M13.5 20H7a2 2 0 0 1-2-2V8h14v4M17.5 13.5v7M14 17h7'
+      assign atcs_icon_stroke = true
+    when 'cart'
+      assign atcs_icon_path = 'M6 6h15l-1.8 9H7.6L6 6zm0 0L5.2 2H2v2h1.6L6 14M9 20.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm10 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z'
+    when 'plus'
+      assign atcs_icon_path = 'M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z'
+  endcase
+  comment
+    Built with pre-encoded %3C/%3E so the string never contains raw
+    angle brackets, which the Liquid-HTML parser rejects inside
+    liquid tags; only spaces still need URI-encoding.
+  endcomment
+  assign atcs_icon_svg = ''
+  if atcs_icon_path != blank
+    if atcs_icon_stroke
+      assign atcs_icon_svg = "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" | append: atcs_icon_path | append: "' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    else
+      assign atcs_icon_svg = "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" | append: atcs_icon_path | append: "'/%3E%3C/svg%3E"
+    endif
+    assign atcs_icon_svg = atcs_icon_svg | replace: ' ', '%20'
+  endif
+  assign atcs_bg = block.settings.bg_color
+  if block.settings.button_background == 'gradient'
+    assign atcs_bg = block.settings.bg_gradient
+  endif
+  assign accel_bg = block.settings.accel_bg_color
+  if block.settings.accel_background == 'gradient'
+    assign accel_bg = block.settings.accel_bg_gradient
+  endif
+-%}
+{% style %}
+  {%- comment -%}
+    CON-3359 model: the ATC always paints its configured background (the
+    old Auto mode is gone; a legacy saved 'auto' value degrades to the
+    Color path). "Auto" text size means the TEMPLATE default (14px), not
+    the theme's .button size; corner radius always applies.
+  {%- endcomment -%}
+  {{ atcs_sel }}.vtls-pi__atc { background: {{ atcs_bg }}; color: {{ block.settings.text_color }}; font-weight: {{ block.settings.font_weight }}; border-radius: {{ block.settings.corner_radius }}px; transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease; {% if block.settings.text_size_mode == 'custom' %}font-size: {{ block.settings.font_size_custom }}px;{% else %}font-size: 14px;{% endif %}{% if block.settings.border == 'solid' %}border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};{% endif %} }
+  {% if block.settings.hover_effect == 'background' %}{{ atcs_sel }}:hover:not([disabled]) { background: {{ block.settings.hover_bg }}; color: {{ block.settings.hover_text }}; }{% endif %}
+  {% if block.settings.hover_effect == 'grow' %}{{ atcs_sel }}:hover:not([disabled]) { transform: scale(1.03); }{% endif %}
+  {% if block.settings.hover_effect == 'lift' %}{{ atcs_sel }}:hover:not([disabled]) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.15); }{% endif %}
+  {% if block.settings.hover_effect == 'shadow' %}{{ atcs_sel }}:hover:not([disabled]) { box-shadow: 0 8px 22px rgba(0,0,0,.35); }{% endif %}
+  {% if atcs_icon_svg != blank %}{{ atcs_lbl }} { display: inline-flex; align-items: center; gap: .4em; }
+  {{ atcs_lbl }}::before { content: ''; flex: 0 0 auto; width: 18px; height: 18px; background-color: currentColor; -webkit-mask: url("data:image/svg+xml,{{ atcs_icon_svg }}") no-repeat center / 100% 100%; mask: url("data:image/svg+xml,{{ atcs_icon_svg }}") no-repeat center / 100% 100%; }{% endif %}
+  {%- if block.settings.show_dynamic_checkout %}
+  /* Accelerated checkout (CON-3359): styles Shopify's UNBRANDED dynamic
+     button; branded wallets (Shop Pay, PayPal) render in their own
+     iframes and only follow size, per platform rules. Radius follows the
+     General corner radius so the two buttons stay coherent. */
+  #vtls-pi-{{ section.id }} .vtls-pi__dynamic .shopify-payment-button__button--unbranded {
+    background: {{ accel_bg }};
+    color: {{ block.settings.accel_text_color }};
+    border-radius: {{ block.settings.corner_radius }}px;
+    {% if block.settings.text_size_mode == 'custom' %}font-size: {{ block.settings.font_size_custom }}px;{% else %}font-size: 14px;{% endif %}
+    {% if block.settings.accel_border == 'solid' %}border: 1px solid {{ block.settings.accel_border_color }};{% endif %}
+  }
+  {%- endif %}
+  /* Spacing (CON-3359): gap between the ATC and the accelerated button,
+     block top/bottom margins per device. */
+  #vtls-pi-{{ section.id }} .vtls-pi__dynamic { margin-top: {{ block.settings.gap }}px; }
+  #vtls-pi-{{ section.id }} .vtls-pi__buy {
+    margin-top: {{ block.settings.margin_y_mobile }}px;
+    margin-bottom: {{ block.settings.margin_y_mobile }}px;
+  }
+  @media screen and (min-width: 750px) {
+    #vtls-pi-{{ section.id }} .vtls-pi__buy {
+      margin-top: {{ block.settings.margin_y }}px;
+      margin-bottom: {{ block.settings.margin_y }}px;
+    }
+  }
+  /* Equal-height buy buttons: flex-center BOTH and let min-height (not
+     padding, line-height, font-size, or the theme's .button rules) be the
+     sole height driver, so they stay equal across the 12-24px custom font
+     range and across themes. The unbranded button is forced display:block
+     elsewhere, so a bare min-height would top-align its label and its own
+     padding could exceed the floor at large fonts — flex + zeroed vertical
+     padding fixes both. Branded wallets (Shop Pay) render in a cross-origin
+     iframe and can only follow width, never height. */
+  #vtls-pi-{{ section.id }} .vtls-pi__buy .vtls-pi__atc,
+  #vtls-pi-{{ section.id }} .vtls-pi__dynamic .shopify-payment-button__button--unbranded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    box-sizing: border-box;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.2;
+  }
+  /* Dawn draws .button borders on an ::after pseudo (box-shadow ring at the
+     THEME's outset radius) — and gives the unbranded payment button the
+     same treatment. Our buttons keep the theme classes for color
+     inheritance but round per block settings, so Dawn's squarer ring pokes
+     out at the corners. The buttons draw their own borders — drop the
+     theme's pseudo ring (and Dawn's ::before hover overlay) entirely. */
+  #vtls-pi-{{ section.id }} .vtls-pi__atc::after,
+  #vtls-pi-{{ section.id }} .vtls-pi__atc::before,
+  #vtls-pi-{{ section.id }} .vtls-pi__dynamic .shopify-payment-button__button--unbranded::after,
+  #vtls-pi-{{ section.id }} .vtls-pi__dynamic .shopify-payment-button__button--unbranded::before {
+    content: none;
+    box-shadow: none;
+  }
+  /* Gift-card recipient form (Horizon parity). The FIELDS mirror the
+     sibling Selectors block's settings so they match the variant and
+     quantity selectors — input colors, corner radius, text size, and the
+     field gap all come from there, via the --vtls-sel-* custom
+     properties that block sets on the section root (Liquid cannot read
+     a nested sibling block's settings, so the contract is CSS). The
+     var() fallbacks mirror the Selectors schema defaults and cover a
+     removed Selectors block. The send-option RADIOS are styled by this
+     block's own gc_* settings under the gift card toggle instead. */
+  #vtls-pi-{{ section.id }} .vtls-pi__gc { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-modes { display: flex; flex-wrap: wrap; gap: 16px; }
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-mode { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: {{ block.settings.gc_text_color }}; {% if block.settings.gc_text_size_mode == 'custom' %}font-size: {{ block.settings.gc_font_size_custom }}px;{% endif %} }
+  /* Custom-drawn radios: the configured text color must paint the ring
+     and the selected dot, and native radios ignore border-color while
+     accent-color cannot recolor the unselected ring. appearance:none
+     turns the input into a normal box so its ::before can be the dot.
+     `color` is set explicitly because form controls do NOT inherit it
+     from the label — without it a theme dot drawn with currentColor
+     lands on the UA black instead of the configured color. */
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-mode input[type='radio'] { appearance: none; -webkit-appearance: none; flex: 0 0 auto; margin: 0; width: 16px; height: 16px; color: {{ block.settings.gc_text_color }}; border: 1px solid {{ block.settings.gc_text_color }}; border-radius: 50%; display: inline-grid; place-content: center; background: transparent; cursor: pointer; }
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-mode input[type='radio']::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: {{ block.settings.gc_text_color }}; transform: scale(0); transition: transform 0.12s ease; }
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-mode input[type='radio']:checked::before { transform: scale(1); }
+  /* Horizon (and other themes) draw their OWN dot on a checked radio via
+     an ::after pseudo with a hard-coded dark background, which paints
+     over ours and ignores the setting. Suppress it so the only dot is
+     the ::before above. */
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-mode input[type='radio']::after { content: none; background: none; }
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-fields { display: flex; flex-direction: column; gap: var(--vtls-sel-gap, 12px); }
+  {%- comment -%}
+    Field rows are plain blocks like the picker's option rows: the label
+    carries the shared .vtls-pi__label class, so its base 0.4rem
+    margin-bottom is the ONLY label-to-input distance — matching the
+    variant/quantity selectors exactly. A flex gap here would stack on
+    top of that margin and drift the two apart.
+  {%- endcomment -%}
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-field { display: block; }
+  {%- comment -%}
+    Label size follows the Selectors block's Text size control, the same
+    way that block drives its own labels: Custom publishes
+    --vtls-sel-font-size, and Auto leaves it unset so the `inherit`
+    fallback takes the Details group size (the base .vtls-pi__label
+    0.85em applies to neither, in both blocks). Color/opacity mirror the
+    Selectors label rule too.
+  {%- endcomment -%}
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-label { font-size: var(--vtls-sel-font-size, inherit); color: var(--vtls-sel-label, #222222); opacity: 1; }
+  {%- comment -%}
+    Same box metrics as .vtls-pi__select so an input and a variant
+    dropdown are the same height with their text on the same left edge
+    (the select's extra right padding is only the chevron well).
+  {%- endcomment -%}
+  #vtls-pi-{{ section.id }} .vtls-pi__gc-input { font: inherit; font-size: var(--vtls-sel-font-size, 1em); box-sizing: border-box; width: 100%; padding: 0.7rem 1.1rem; color: var(--vtls-sel-text, #222222); border: 1px solid var(--vtls-sel-border, #d6d6d6); border-radius: var(--vtls-sel-radius, 14px); background: var(--vtls-sel-bg, #ffffff); }
+  #vtls-pi-{{ section.id }} textarea.vtls-pi__gc-input { resize: vertical; }
+  /* Local pickup availability (Horizon parity). Primary text takes this
+     block's pickup_text_color; the meta line inherits it at 0.7 opacity.
+     Text sizes stay hard-coded (14px / 13px) and the status dot keeps
+     its own green/gray colors by design. */
+  #vtls-pi-{{ section.id }} .vtls-pi__pickup { margin-top: 14px; color: {{ block.settings.pickup_text_color }}; }
+  #vtls-pi-{{ section.id }} .vtls-pi__pickup-row { display: flex; align-items: flex-start; gap: 10px; }
+  #vtls-pi-{{ section.id }} .vtls-pi__pickup-dot { flex: 0 0 auto; width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; background: #2e7d32; }
+  #vtls-pi-{{ section.id }} .vtls-pi__pickup-dot.is-unavailable { background: #b0b0b0; }
+  #vtls-pi-{{ section.id }} .vtls-pi__pickup-title { margin: 0; font-size: 14px; }
+  #vtls-pi-{{ section.id }} .vtls-pi__pickup-meta { margin: 2px 0 0; font-size: 13px; opacity: 0.7; }
+{% endstyle %}
+<div class="vtls-pi__buy" {{ block.shopify_attributes }}>
+  {%- comment -%}
+    shopify-product-form + data-type are load-bearing for the Vitals
+    runtime: the AtcForm document injector resolves the buy form via
+    verified selectors like `.shopify-product-form` and
+    `form[data-type="add-to-cart-form"]`, and every form-anchored widget
+    placement ("after the ATC form", Sticky ATC's inside-form button
+    lookup) hangs off that match. Passing `class:` to {% form %} REPLACES
+    Shopify's default `shopify-product-form` class, so it must be re-added
+    by hand — without it the only element carrying the class is the
+    price block's hidden installments mini-form, and every widget clumps
+    under the title (Aug 2026 incident).
+  {%- endcomment -%}
+  {%- form 'product', product, id: product_form_id, class: 'vtls-pi__form shopify-product-form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+    <input type="hidden" name="id" value="{{ current_variant.id }}" data-vtls-variant-id>
+    {%- if block.settings.gift_card_form and product.gift_card? -%}
+      {%- comment -%}
+        Gift-card recipient form (Horizon parity). Rendered INSIDE the product
+        form so the properties[...] inputs are native form descendants — they
+        submit with the section's FormData add AND are seen by the payment
+        button. "Send as a gift" enables the recipient fields; every recipient
+        input renders disabled so it submits ONLY on opt-in (same
+        disabled-toggle contract as the selling_plan input below). The
+        properties[__shopify_send_gift_card_to_recipient]=on flag is what makes
+        Shopify actually email the card to the recipient.
+      {%- endcomment -%}
+      <div class="vtls-pi__gc" data-vtls-gift-card>
+        <div class="vtls-pi__gc-modes" role="radiogroup" aria-label="{{ d_gc_legend | escape }}">
+          <label class="vtls-pi__gc-mode">
+            <input type="radio" name="vtls-gc-mode-{{ block.id }}" value="self" data-vtls-gc-mode checked>
+            <span>{{ d_gc_self | escape }}</span>
+          </label>
+          <label class="vtls-pi__gc-mode">
+            <input type="radio" name="vtls-gc-mode-{{ block.id }}" value="recipient" data-vtls-gc-mode>
+            <span>{{ d_gc_gift | escape }}</span>
+          </label>
+        </div>
+        <div class="vtls-pi__gc-fields" data-vtls-gc-fields hidden>
+          <div class="vtls-pi__gc-field">
+            <label class="vtls-pi__gc-label vtls-pi__label" for="vtls-gc-email-{{ block.id }}">{{ d_gc_email | escape }}</label>
+            <input id="vtls-gc-email-{{ block.id }}" class="vtls-pi__gc-input" type="email" name="properties[Recipient email]" autocomplete="email" data-vtls-gc-input data-vtls-gc-email disabled>
+          </div>
+          <div class="vtls-pi__gc-field">
+            <label class="vtls-pi__gc-label vtls-pi__label" for="vtls-gc-name-{{ block.id }}">{{ d_gc_name | escape }}</label>
+            <input id="vtls-gc-name-{{ block.id }}" class="vtls-pi__gc-input" type="text" name="properties[Recipient name]" maxlength="100" data-vtls-gc-input disabled>
+          </div>
+          <div class="vtls-pi__gc-field">
+            <label class="vtls-pi__gc-label vtls-pi__label" for="vtls-gc-msg-{{ block.id }}">{{ d_gc_message | escape }}</label>
+            <textarea id="vtls-gc-msg-{{ block.id }}" class="vtls-pi__gc-input" name="properties[Message]" maxlength="200" rows="3" data-vtls-gc-input disabled></textarea>
+          </div>
+          <div class="vtls-pi__gc-field">
+            <label class="vtls-pi__gc-label vtls-pi__label" for="vtls-gc-date-{{ block.id }}">{{ d_gc_sendon | escape }}</label>
+            <input id="vtls-gc-date-{{ block.id }}" class="vtls-pi__gc-input" type="date" name="properties[Send on]" data-vtls-gc-input data-vtls-gc-date disabled>
+          </div>
+        </div>
+        <input type="hidden" name="properties[__shopify_send_gift_card_to_recipient]" value="on" data-vtls-gc-flag disabled>
+        <input type="hidden" name="properties[__shopify_offset]" value="" data-vtls-gc-offset disabled>
+      </div>
+    {%- endif -%}
+    {%- unless product.has_only_default_variant -%}
+      {%- comment -%}
+        No-JS fallback: the JS picker lives outside this form and only the
+        custom element syncs the hidden id input. With scripting disabled,
+        this native select is the shopper's variant choice; it renders after
+        the hidden input so its duplicate "id" param wins on submit. The JS
+        picker ships server-rendered [hidden] and the runtime reveals it, so
+        without JS only this select shows — deliberately NOT a noscript
+        <style>: the editor's inert section parse materializes noscript
+        children, and an adopted <style> applies even inside the UA-hidden
+        noscript, which used to hide the picker after every editor setting
+        change until refresh.
+      {%- endcomment -%}
+      <noscript>
+        <div class="vtls-pi__opt">
+          <label class="vtls-pi__label" for="vtls-noscript-id-{{ section.id }}">Variant</label>
+          <select id="vtls-noscript-id-{{ section.id }}" class="vtls-pi__select" name="id">
+            {%- for variant in product.variants -%}
+              <option
+                value="{{ variant.id }}"
+                {% if variant.id == current_variant.id %}selected{% endif %}
+                {% unless variant.available %}disabled{% endunless %}
+              >
+                {{ variant.title }} &mdash; {{ variant.price | money }}
+              </option>
+            {%- endfor -%}
+          </select>
+        </div>
+      </noscript>
+    {%- endunless -%}
+    {%- comment -%} Filled by the Purchase options block; disabled = excluded from submit. {%- endcomment -%}
+    {%- liquid
+      # requires_selling_plan pre-checks the first plan in the buying-options
+      # markup, so the submitted input must ship in the same state — enabled
+      # and valued — or an add before/without the JS sync omits the plan.
+      assign vtls_initial_plan_id = ''
+      if product.requires_selling_plan
+        assign vtls_first_group = product.selling_plan_groups | first
+        if vtls_first_group
+          assign vtls_first_plan = vtls_first_group.selling_plans | first
+          if vtls_first_plan
+            assign vtls_initial_plan_id = vtls_first_plan.id
+          endif
+        endif
+      endif
+    -%}
+    <input type="hidden" name="selling_plan" value="{{ vtls_initial_plan_id }}" {% if vtls_initial_plan_id == '' %}disabled{% endif %} data-vtls-selling-plan>
+    {%- comment -%}
+      In-form mirror of the quantity selector, which lives outside this
+      form and joins it via the form attribute. Spec-compliant consumers
+      (native submit, FormData) see the associated input, but scripts
+      that enumerate form DESCENDANTS (payment SDKs, cart apps cloning
+      or serializing the form) miss it and add quantity 1. The custom
+      element names this mirror and keeps it synced; with JS disabled it
+      stays nameless so only the associated visible input submits.
+    {%- endcomment -%}
+    <input type="hidden" value="{{ current_variant.quantity_rule.min | default: 1 }}" data-vtls-qty-mirror>
+    <button
+      type="submit"
+      name="add"
+      class="vtls-pi__atc button"
+      data-vtls-atc
+      data-text-add="{{ atc_label | escape }}"
+      data-text-soldout="{{ soldout_label | escape }}"
+      data-text-unavailable="{{ unavailable_label | escape }}"
+      {% unless current_variant.available %}disabled{% endunless %}
+    >
+      <span data-vtls-atc-text>
+        {%- if current_variant.available -%}{{ atc_label }}{%- elsif current_variant -%}{{ soldout_label }}{%- else -%}{{ unavailable_label }}{%- endif -%}
+      </span>
+      {%- comment -%}
+        Add-confirmation checkmark (theme buttons swap their label
+        for a check after a successful add; the runtime mirrors
+        that by toggling vtls-pi__atc--added for a moment).
+      {%- endcomment -%}
+      <span class="vtls-pi__atc-check" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"></path></svg>
+      </span>
+    </button>
+    {%- if block.settings.show_dynamic_checkout -%}
+      <div class="vtls-pi__dynamic{% unless current_variant.available %} is-hidden{% endunless %}" data-vtls-dynamic>
+        {{ form | payment_button }}
+      </div>
+    {%- endif -%}
+    <p class="vtls-pi__added-note" data-vtls-added hidden>{{ added_label | escape }} — <a href="{{ routes.cart_url }}">{{ d_view_cart | escape }}</a></p>
+    <p class="vtls-pi__error" data-vtls-atc-error data-fallback-error="{{ d_cart_error | escape }}" role="alert" hidden></p>
+  {%- endform -%}
+  {%- if block.settings.show_pickup_availability -%}
+    {%- comment -%}
+      Local pickup availability (Horizon parity), below the buttons. Rendered
+      server-side from the selected variant's store_availabilities; refreshed on
+      variant change because the section swaps [data-vtls-pickup] from its own
+      re-fetch (no dedicated web component / per-variant fetch). Hidden when the
+      variant has no pickup-enabled locations, so it self-clears after a swap.
+    {%- endcomment -%}
+    {%- assign vtls_pickups = current_variant.store_availabilities | where: 'pick_up_enabled', true -%}
+    <div class="vtls-pi__pickup" data-vtls-pickup{% if vtls_pickups.size == 0 %} hidden{% endif %}>
+      {%- if vtls_pickups.size > 0 -%}
+        {%- assign vtls_pickup = vtls_pickups.first -%}
+        <div class="vtls-pi__pickup-row">
+          <span class="vtls-pi__pickup-dot{% unless vtls_pickup.available %} is-unavailable{% endunless %}" aria-hidden="true"></span>
+          <div class="vtls-pi__pickup-copy">
+            {%- if vtls_pickup.available -%}
+              <p class="vtls-pi__pickup-title">{{ d_pickup_available }} {{ vtls_pickup.location.name }}</p>
+              {%- comment -%}
+                pick_up_time is a full sentence from Shopify ("Usually ready
+                in 4 hours") — render bare, no prefix (Dawn parity).
+              {%- endcomment -%}
+              {%- if vtls_pickup.pick_up_time != blank -%}
+                <p class="vtls-pi__pickup-meta">{{ vtls_pickup.pick_up_time }}</p>
+              {%- endif -%}
+            {%- else -%}
+              <p class="vtls-pi__pickup-title">{{ d_pickup_unavailable }} {{ vtls_pickup.location.name }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Buy buttons",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show accelerated checkout button",
+      "info": "Shop Pay, PayPal and other accelerated checkout buttons, rendered by Shopify.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "text_size_mode",
+      "label": "Text size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto",
+      "info": "Auto shows template default."
+    },
+    {
+      "type": "range",
+      "id": "font_size_custom",
+      "label": "Text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.text_size_mode == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Text style",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Add to cart button"
+    },
+    {
+      "type": "select",
+      "id": "button_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.button_background != 'gradient' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.button_background == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border thickness",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.border == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.border == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_icon",
+      "label": "Button icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "bag",
+          "label": "Bag"
+        },
+        {
+          "value": "bag_plus",
+          "label": "Bag +"
+        },
+        {
+          "value": "cart",
+          "label": "Cart"
+        },
+        {
+          "value": "plus",
+          "label": "Plus"
+        }
+      ],
+      "default": "bag_plus"
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover effect",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "background",
+          "label": "Background"
+        },
+        {
+          "value": "grow",
+          "label": "Grow"
+        },
+        {
+          "value": "lift",
+          "label": "Lift"
+        },
+        {
+          "value": "shadow",
+          "label": "Shadow"
+        }
+      ],
+      "default": "grow"
+    },
+    {
+      "type": "color",
+      "id": "hover_bg",
+      "label": "Hover background color",
+      "default": "#A7C0D4",
+      "visible_if": "{{ block.settings.hover_effect == 'background' }}"
+    },
+    {
+      "type": "color",
+      "id": "hover_text",
+      "label": "Hover text color",
+      "default": "#FFFFFF",
+      "visible_if": "{{ block.settings.hover_effect == 'background' }}"
+    },
+    {
+      "type": "header",
+      "content": "Accelerated checkout button",
+      "visible_if": "{{ block.settings.show_dynamic_checkout }}"
+    },
+    {
+      "type": "select",
+      "id": "accel_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color",
+      "visible_if": "{{ block.settings.show_dynamic_checkout }}"
+    },
+    {
+      "type": "color",
+      "id": "accel_bg_color",
+      "label": "Background color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.show_dynamic_checkout and block.settings.accel_background != 'gradient' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "accel_bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.show_dynamic_checkout and block.settings.accel_background == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "accel_text_color",
+      "label": "Text color",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.show_dynamic_checkout }}"
+    },
+    {
+      "type": "select",
+      "id": "accel_border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.show_dynamic_checkout }}"
+    },
+    {
+      "type": "color",
+      "id": "accel_border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.show_dynamic_checkout and block.settings.accel_border == 'solid' }}"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Space between buttons",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "margin_y",
+      "label": "Top - bottom margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_y_mobile",
+      "label": "Top - bottom margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Gift card"
+    },
+    {
+      "type": "checkbox",
+      "id": "gift_card_form",
+      "label": "Let customers send gift cards",
+      "info": "Customers can email gift cards with a message and optional send date. Edit appearance from the Selectors block.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "gc_text_color",
+      "label": "Text color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.gift_card_form }}"
+    },
+    {
+      "type": "select",
+      "id": "gc_text_size_mode",
+      "label": "Text size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto",
+      "visible_if": "{{ block.settings.gift_card_form }}"
+    },
+    {
+      "type": "range",
+      "id": "gc_font_size_custom",
+      "label": "Text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.gift_card_form and block.settings.gc_text_size_mode == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Local pickup"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pickup_availability",
+      "label": "Show pickup availability",
+      "info": "Display whether this item is available for in-store pickup. Edit appearance from the Selectors block.",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "pickup_text_color",
+      "label": "Text color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.show_pickup_availability }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Buy buttons"
+    }
+  ]
+}
+{% endschema %}

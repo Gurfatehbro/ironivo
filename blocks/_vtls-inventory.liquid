@@ -1,0 +1,95 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign d_backorder = 'products.product.inventory_out_of_stock_continue_selling' | t
+  assign vtls_probe = d_backorder | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_backorder = 'In stock — ships soon'
+  endif
+  assign d_in_stock = 'products.product.inventory_in_stock' | t
+  assign vtls_probe = d_in_stock | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_in_stock = 'In stock'
+  endif
+  assign d_low = 'products.product.inventory_low_stock' | t
+  assign vtls_probe = d_low | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_low = 'Low stock'
+  endif
+  assign d_low_count = 'products.product.inventory_low_stock_show_count' | t: quantity: '[count]'
+  assign vtls_probe = d_low_count | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_low_count = 'Low stock — [count] left'
+  endif
+  assign d_out = 'products.product.inventory_out_of_stock' | t
+  assign vtls_probe = d_out | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_out = 'Out of stock'
+  endif
+-%}
+
+{%- liquid
+  assign inv_label_in = d_in_stock
+  assign inv_label_low = d_low
+  assign inv_label_out = d_out
+  assign inv_label_backorder = d_backorder
+  assign inv_label_count = d_low_count
+-%}
+<p
+  class="vtls-pi__inventory{% if current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= block.settings.threshold %} is-low{% elsif current_variant.inventory_quantity <= 0 and current_variant.inventory_policy != 'continue' %} is-out{% endif %}"
+  data-vtls-inventory
+  data-label-in="{{ inv_label_in | escape }}"
+  data-label-low="{{ inv_label_low | escape }}"
+  data-label-out="{{ inv_label_out | escape }}"
+  data-label-backorder="{{ inv_label_backorder | escape }}"
+  data-label-count="{{ inv_label_count | escape }}"
+  {{ block.shopify_attributes }}
+  {% if current_variant.inventory_management != 'shopify' %}hidden{% endif %}
+>
+  <span class="vtls-pi__dot"></span><span data-vtls-inventory-text>
+  {%- if current_variant.inventory_quantity > 0 -%}
+    {%- if current_variant.inventory_quantity <= block.settings.threshold -%}
+      {%- if block.settings.show_count -%}
+        {{ inv_label_count | replace: '[count]', current_variant.inventory_quantity }}
+      {%- else -%}
+        {{ inv_label_low }}
+      {%- endif -%}
+    {%- else -%}
+      {{ inv_label_in }}
+    {%- endif -%}
+  {%- elsif current_variant.inventory_policy == 'continue' -%}
+    {{ inv_label_backorder }}
+  {%- else -%}
+    {{ inv_label_out }}
+  {%- endif -%}
+  </span>
+</p>
+
+{% schema %}
+{
+  "name": "Inventory status",
+  "settings": [
+    {
+      "type": "range",
+      "id": "threshold",
+      "label": "Low stock threshold",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show exact count when low",
+      "info": "Also exposes the count in the page source.",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Inventory status"
+    }
+  ]
+}
+{% endschema %}

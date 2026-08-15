@@ -1,0 +1,53 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- if block.settings.text != blank -%}
+  <p class="vtls-pi__text{% if block.settings.text_style == 'uppercase' %} vtls-pi__text--caps{% endif %}" {% if block.settings.text_style == 'uppercase' %}style="text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85em;"{% elsif block.settings.text_style == 'subtle' %}style="opacity: 0.75;"{% endif %} {{ block.shopify_attributes }}>
+    {{- block.settings.text -}}
+  </p>
+{%- else -%}
+  {%- comment -%}
+    Text cleared: emit the shared editor anchor rather than an empty <p>, so the
+    block stays selectable AND the parent's gap-collapse rule can hide its
+    content_for wrapper instead of leaving a blank row-gap slot.
+  {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Text",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "Share information about your product",
+      "info": "Supports dynamic sources (metafields)."
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "body",
+          "label": "Body"
+        },
+        {
+          "value": "subtle",
+          "label": "Subtle"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        }
+      ],
+      "default": "body"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text"
+    }
+  ]
+}
+{% endschema %}

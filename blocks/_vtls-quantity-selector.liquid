@@ -1,0 +1,53 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'vtls-pi-form-' | append: section.id
+  assign d_qty = 'products.product.quantity.label' | t
+  assign vtls_probe = d_qty | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_qty = 'Quantity'
+  endif
+-%}
+
+{%- comment -%}
+  product-form__input product-form__quantity matches the Vitals
+  Quantity document injector's top-priority selector (Dawn's), so
+  Vitals can treat this block like a stock theme's quantity
+  selector: Volume Discount hides it while a tier drives the
+  quantity and syncs/reads it otherwise. Without the match, the
+  selector stays visible next to VD tiers and the shopper's typed
+  quantity is silently ignored in favor of the tier quantity.
+{%- endcomment -%}
+<div class="vtls-pi__qty-wrap product-form__input product-form__quantity" {{ block.shopify_attributes }}>
+  {%- liquid
+    assign qty_label = d_qty
+  -%}
+  <label class="vtls-pi__label" for="vtls-qty-{{ section.id }}">{{ qty_label | escape }}</label>
+  <div class="vtls-pi__qty">
+    <button type="button" data-vtls-qty="-1" aria-label="Decrease quantity">&minus;</button>
+    <input
+      id="vtls-qty-{{ section.id }}"
+      type="number"
+      name="quantity"
+      value="{{ current_variant.quantity_rule.min | default: 1 }}"
+      min="{{ current_variant.quantity_rule.min | default: 1 }}"
+      {% if current_variant.quantity_rule.max %}max="{{ current_variant.quantity_rule.max }}"{% endif %}
+      step="{{ current_variant.quantity_rule.increment | default: 1 }}"
+      form="{{ product_form_id }}"
+      data-vtls-qty-input
+    >
+    <button type="button" data-vtls-qty="1" aria-label="Increase quantity">+</button>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Quantity selector",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Quantity selector"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,28 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign d_sku = 'products.product.sku' | t
+  assign vtls_probe = d_sku | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_sku = 'SKU'
+  endif
+-%}
+
+<p class="vtls-pi__sku" data-vtls-sku {{ block.shopify_attributes }} {% if current_variant.sku == blank %}hidden{% endif %}>
+  {%- liquid
+    assign sku_label = d_sku
+  -%}
+  {{ sku_label | escape }}: <span data-vtls-sku-value>{{ current_variant.sku }}</span>
+</p>
+
+{% schema %}
+{
+  "name": "SKU",
+  "settings": [],
+  "presets": [
+    {
+      "name": "SKU"
+    }
+  ]
+}
+{% endschema %}

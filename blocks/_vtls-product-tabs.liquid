@@ -1,0 +1,1369 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign tabs_count = block.settings.number_of_tabs | plus: 0
+  assign tabs_has = false
+  for i in (1..tabs_count)
+    assign tk = 'tab_' | append: i | append: '_title'
+    if block.settings[tk] != blank
+      assign tabs_has = true
+    endif
+  endfor
+  assign tabs_bg = ''
+  if block.settings.background == 'color'
+    assign tabs_bg = block.settings.bg_color
+  elsif block.settings.background == 'gradient'
+    assign tabs_bg = block.settings.bg_gradient
+  endif
+-%}
+{% style %}
+  .Vtls-{{ block.id }}.PgTabs { margin: {{ block.settings.margin_top_mobile }}px 0 {{ block.settings.margin_bottom_mobile }}px;{% if tabs_bg != blank %} background: {{ tabs_bg }}; padding: 16px 20px; border-radius: {{ block.settings.corner_radius }}px;{% if block.settings.border == 'solid' %} border: 1px solid {{ block.settings.border_color }};{% endif %}{% endif %} }
+  @media (min-width: 750px) { .Vtls-{{ block.id }}.PgTabs { margin: {{ block.settings.margin_top }}px 0 {{ block.settings.margin_bottom }}px; } }
+  {% if block.settings.tab_background == 'dividers' %}.Vtls-{{ block.id }} .PgTabs__Item:not(:last-child) { border-bottom: 1px solid {{ block.settings.divider_color }}; }{% endif %}
+  {% if block.settings.tab_background == 'color' %}.Vtls-{{ block.id }} .PgTabs__Item { background: {{ block.settings.tab_bg_color }}; border-radius: {{ block.settings.corner_radius }}px; padding: 4px 16px;{% if block.settings.tab_border == 'solid' %} border: 1px solid {{ block.settings.tab_border_color }};{% endif %} }{% endif %}
+  {% if block.settings.space_between > 0 %}.Vtls-{{ block.id }} .PgTabs__Item:not(:first-child) { margin-top: {{ block.settings.space_between }}px; }{% endif %}
+  .Vtls-{{ block.id }} .PgTabs__Summary { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 0; list-style: none; {% if block.settings.text_size_mode == 'custom' %}font-size: {{ block.settings.font_size_custom }}px; {% endif %}color: {{ block.settings.title_color }}; font-weight: {{ block.settings.title_style }}; }
+  .Vtls-{{ block.id }} .PgTabs__Summary::-webkit-details-marker { display: none; }
+  .Vtls-{{ block.id }} .PgTabs__TitleIcon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; color: {{ block.settings.icon_color }}; }
+  .Vtls-{{ block.id }} .PgTabs__TitleIcon .PgI { width: 100%; height: 100%; }
+  .Vtls-{{ block.id }} .PgTabs__Title { flex: 1 1 auto; }
+  .Vtls-{{ block.id }} .PgTabs__Content { padding: 0 0 12px; max-width: 70ch; color: {{ block.settings.title_color }};{% if block.settings.text_size_mode == 'custom' %} font-size: {{ block.settings.font_size_custom }}px;{% endif %} }
+  .Vtls-{{ block.id }} .PgTabs__Content img { max-width: 100%; height: auto; }
+  /* Optically matched to the chevron: same 16px box (so switching Accordion
+     icon never shifts the row), arms inset to 10px to match the chevron's
+     ~9.6px drawn width, and 1.6px bars to match its stroke-width. The bars
+     used to span the full box at 2px, which read ~46% wider and heavier than
+     the arrows. */
+  .Vtls-{{ block.id }} .PgTabs__Ind { flex: 0 0 auto; position: relative; width: 16px; height: 16px; }
+  .Vtls-{{ block.id }}.PgTabs--plus_minus .PgTabs__Ind::before, .Vtls-{{ block.id }}.PgTabs--plus_minus .PgTabs__Ind::after { content: ''; position: absolute; background: {{ block.settings.icon_color }}; }
+  .Vtls-{{ block.id }}.PgTabs--plus_minus .PgTabs__Ind::before { top: 50%; left: 3px; right: 3px; height: 1.6px; transform: translateY(-50%); }
+  .Vtls-{{ block.id }}.PgTabs--plus_minus .PgTabs__Ind::after { left: 50%; top: 3px; bottom: 3px; width: 1.6px; transform: translateX(-50%); transition: opacity .2s ease; }
+  .Vtls-{{ block.id }}.PgTabs--plus_minus details[open] .PgTabs__Ind::after { opacity: 0; }
+  .Vtls-{{ block.id }} .PgTabs__Chevron { flex: 0 0 auto; width: 16px; height: 16px; transition: transform .2s ease; }
+  .Vtls-{{ block.id }} details[open] .PgTabs__Chevron { transform: rotate(180deg); }
+{% endstyle %}
+{%- if tabs_has -%}
+  <div class="Vtls-{{ block.id }} PgTabs PgTabs--{{ block.settings.accordion_icon }}" {{ block.shopify_attributes }}>
+    {%- assign tabs_rendered = 0 -%}
+    {%- for i in (1..tabs_count) -%}
+      {%- assign tk = 'tab_' | append: i | append: '_title' -%}
+      {%- assign ck = 'tab_' | append: i | append: '_text' -%}
+      {%- assign ik = 'tab_' | append: i | append: '_icon' -%}
+      {%- assign tab_title = block.settings[tk] -%}
+      {%- if tab_title != blank -%}
+        {%- assign tabs_rendered = tabs_rendered | plus: 1 -%}
+        {%- assign tab_content = block.settings[ck] -%}
+        {%- assign tab_content_stripped = tab_content | strip_html | strip -%}
+        {%- assign tab_content_lc = tab_content | downcase -%}
+        {%- assign tab_has_media = false -%}
+        {%- if tab_content_lc contains '<img' or tab_content_lc contains '<iframe' or tab_content_lc contains '<video' or tab_content_lc contains '<svg' or tab_content_lc contains '<picture' or tab_content_lc contains '<source' or tab_content_lc contains '<embed' or tab_content_lc contains '<audio' or tab_content_lc contains '<object' -%}{%- assign tab_has_media = true -%}{%- endif -%}
+        {%- assign vtls_lb = '{' | append: '{' -%}
+        {%- comment -%}
+          Tab 1 falls back to the live description when its content is blank
+          OR still contains unresolved Liquid (a dynamic-source default
+          stored literally) - shoppers must never see raw braces.
+        {%- endcomment -%}
+        {%- if i == 1 and tab_has_media == false -%}
+          {%- if tab_content_stripped == blank or tab_content_stripped contains vtls_lb -%}{%- assign tab_content = product.description -%}{%- endif -%}
+        {%- endif -%}
+        <details class="PgTabs__Item"{% if block.settings.open_first and tabs_rendered == 1 %} open{% endif %}>
+          <summary class="PgTabs__Summary">
+            {%- assign tab_ic = block.settings[ik] -%}
+            {%- if tab_ic != 'none' -%}<span class="PgTabs__TitleIcon"><span class="PgI PgI--{{ tab_ic }}" aria-hidden="true"></span></span>{%- endif -%}
+            <span class="PgTabs__Title">{{ tab_title }}</span>
+            {%- if block.settings.accordion_icon == 'arrows' -%}<svg class="PgTabs__Chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="{{ block.settings.icon_color }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- else -%}<span class="PgTabs__Ind"></span>{%- endif -%}
+          </summary>
+          <div class="PgTabs__Content rte">{{ tab_content }}</div>
+        </details>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  {%- comment -%} All tab titles cleared: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Description tabs",
+  "settings": [
+    {
+      "type": "select",
+      "id": "number_of_tabs",
+      "label": "Number of tabs",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "header",
+      "content": "Tab #1"
+    },
+    {
+      "type": "select",
+      "id": "tab_1_icon",
+      "label": "Tab #1 icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "tab_1_title",
+      "label": "Tab #1 title",
+      "default": "Description"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_1_text",
+      "label": "Tab #1 description",
+      "default": "<p>{{ product.description }}</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tab #2",
+      "visible_if": "{{ block.settings.number_of_tabs != '1' }}"
+    },
+    {
+      "type": "select",
+      "id": "tab_2_icon",
+      "label": "Tab #2 icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.number_of_tabs != '1' }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_title",
+      "label": "Tab #2 title",
+      "default": "Shipping & returns",
+      "visible_if": "{{ block.settings.number_of_tabs != '1' }}"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_2_text",
+      "label": "Tab #2 description",
+      "default": "<p>Let customers know what to expect: processing time, delivery estimates, and your return policy.</p>",
+      "visible_if": "{{ block.settings.number_of_tabs != '1' }}"
+    },
+    {
+      "type": "header",
+      "content": "Tab #3",
+      "visible_if": "{{ block.settings.number_of_tabs == '3' or block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "select",
+      "id": "tab_3_icon",
+      "label": "Tab #3 icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.number_of_tabs == '3' or block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_3_title",
+      "label": "Tab #3 title",
+      "default": "Why choose us",
+      "visible_if": "{{ block.settings.number_of_tabs == '3' or block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_3_text",
+      "label": "Tab #3 description",
+      "default": "<p>Share what makes your product special — quality, guarantees, or your brand story.</p>",
+      "visible_if": "{{ block.settings.number_of_tabs == '3' or block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "header",
+      "content": "Tab #4",
+      "visible_if": "{{ block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "select",
+      "id": "tab_4_icon",
+      "label": "Tab #4 icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "text",
+      "id": "tab_4_title",
+      "label": "Tab #4 title",
+      "default": "Product specs",
+      "visible_if": "{{ block.settings.number_of_tabs == '4' }}"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_4_text",
+      "label": "Tab #4 description",
+      "visible_if": "{{ block.settings.number_of_tabs == '4' }}",
+      "default": "<p>Find all the essential details about this product, including dimensions, materials, weight, compatibility, and other key technical information.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Text & icons"
+    },
+    {
+      "type": "select",
+      "id": "text_size_mode",
+      "label": "Text size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto",
+      "info": "Auto shows template default."
+    },
+    {
+      "type": "range",
+      "id": "font_size_custom",
+      "label": "Text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.text_size_mode == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Text color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "title_style",
+      "label": "Title style",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icons color",
+      "default": "#222222"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "accordion_icon",
+      "label": "Accordion icon",
+      "options": [
+        {
+          "value": "arrows",
+          "label": "Arrows"
+        },
+        {
+          "value": "plus_minus",
+          "label": "Plus / Minus"
+        }
+      ],
+      "default": "arrows"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F5F5F5",
+      "visible_if": "{{ block.settings.background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.background != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.background != 'none' and block.settings.border == 'solid' }}"
+    },
+    {
+      "type": "select",
+      "id": "tab_background",
+      "label": "Tab background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dividers",
+          "label": "Dividers"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        }
+      ],
+      "default": "dividers"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Dividers color",
+      "default": "#d6d6d6",
+      "visible_if": "{{ block.settings.tab_background == 'dividers' }}"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg_color",
+      "label": "Background color",
+      "default": "#F5F5F5",
+      "visible_if": "{{ block.settings.tab_background == 'color' }}"
+    },
+    {
+      "type": "select",
+      "id": "tab_border",
+      "label": "Tab border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.tab_background == 'color' }}"
+    },
+    {
+      "type": "color",
+      "id": "tab_border_color",
+      "label": "Tab border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.tab_background == 'color' and block.settings.tab_border == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.tab_background == 'color' or block.settings.background != 'none' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "Open first tab by default",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "space_between",
+      "label": "Space between tabs",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Description tabs"
+    }
+  ]
+}
+{% endschema %}

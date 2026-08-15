@@ -1,0 +1,270 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- unless product.has_only_default_variant -%}
+  {%- comment -%}
+    Server-resolved picker (Dawn's Section Rendering pattern): option
+    inputs carry the option VALUE IDs; on change the JS re-fetches this
+    section with ?option_values=...&section_id=... and swaps this node
+    from the response. Selection state (value.selected) and per-value
+    availability (value.available, relative to the other selected
+    options) are rendered server-side — the client holds no variant
+    matrix, so any catalog size works unchanged.
+  {%- endcomment -%}
+  {%- liquid
+    assign unavailable_suffix = 'products.product.unavailable' | t
+    assign vtls_probe = unavailable_suffix | downcase
+    if vtls_probe contains 'translation missing'
+      assign unavailable_suffix = 'Unavailable'
+    endif
+    # A color setting with no schema default reads blank — the "Transparent"
+    # default the design asks for on the selected pill border.
+    assign vtls_sel_border = block.settings.selected_border_color
+    if vtls_sel_border == blank
+      assign vtls_sel_border = 'transparent'
+    endif
+  -%}
+  {% style %}
+    {%- comment -%}
+      Structure only — the shared selector styling (colors, radius, gap,
+      margins, text size, hover) lives on the parent Selectors group
+      (CON-3358), applied as descendant CSS from its wrapper.
+    {%- endcomment -%}
+    .Vtls-{{ block.id }}.vtls-pi__picker {
+      display: flex;
+      flex-direction: column;
+    }
+    /* Single-value option (Horizon's variant-option-single): name and value
+       on one static line. Row spacing is the Selectors group's row-gap, so
+       the label's own block margin is dropped. */
+    .Vtls-{{ block.id }} .vtls-pi__opt--single .vtls-pi__label { margin-bottom: 0; }
+    /* .is-selected keeps the base currentColor ring unless neutralized —
+       required for the transparent selected-border default to look
+       borderless. Higher specificity than the group's base pill colors. */
+    .Vtls-{{ block.id }} .vtls-pi__pill.is-selected {
+      background: {{ block.settings.selected_background_color }};
+      border-color: {{ vtls_sel_border }};
+      color: {{ block.settings.selected_text_color }};
+      box-shadow: none;
+    }
+    /* Swatch rows (Horizon parity): an option whose values carry
+       value.swatch data renders as color/image circles instead of the
+       chosen picker style. Radio mechanics identical to pills. */
+    .Vtls-{{ block.id }} .vtls-pi__swatches { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .Vtls-{{ block.id }} .vtls-pi__swatch {
+      position: relative;
+      display: inline-flex;
+      padding: 2px;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .Vtls-{{ block.id }} .vtls-pi__swatch input { position: absolute; opacity: 0; pointer-events: none; }
+    .Vtls-{{ block.id }} .vtls-pi__swatch-dot {
+      display: block;
+      width: 28px;
+      height: 28px;
+      border-radius: inherit;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      background: var(--vtls-swatch-bg, transparent) center / cover no-repeat;
+    }
+    /* Value without swatch data inside a swatch-mode option (Horizon's
+       swatch--unavailable): dashed placeholder circle. */
+    .Vtls-{{ block.id }} .vtls-pi__swatch-dot.is-blank { border-style: dashed; }
+    .Vtls-{{ block.id }} .vtls-pi__swatch.is-selected { border-color: currentColor; }
+    .Vtls-{{ block.id }} .vtls-pi__swatch:not(.is-unavailable):hover { opacity: 0.8; }
+    .Vtls-{{ block.id }} .vtls-pi__swatch.is-unavailable { opacity: 0.45; }
+    .Vtls-{{ block.id }} .vtls-pi__swatch.is-unavailable::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: linear-gradient(
+        to top right,
+        transparent calc(50% - 0.5px),
+        rgba(0, 0, 0, 0.55) calc(50% - 0.5px) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+      );
+    }
+    .Vtls-{{ block.id }} .vtls-pi__swatch-value { opacity: 0.7; font-weight: 400; margin-inline-start: 0.35rem; }
+    @media screen and (min-width: 750px) {
+      .Vtls-{{ block.id }} .vtls-pi__swatch-dot { width: 32px; height: 32px; }
+    }
+  {% endstyle %}
+  {%- comment -%}
+    product-form__variants matches a verified Vitals ProductVariants
+    document-injector selector, so Vitals widgets (e.g. Volume
+    Discount variant-locked tiers) can find and hide this picker
+    the same way they do on stock themes. Class only — no theme
+    registers JS against it.
+  {%- endcomment -%}
+  <div class="Vtls-{{ block.id }} vtls-pi__picker product-form__variants" data-vtls-picker hidden {{ block.shopify_attributes }}>
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        # Horizon parity: any value carrying swatch data flips the whole
+        # option to a swatch-circle row (regardless of Style), gated by the
+        # show_swatches toggle. Values without data get a dashed blank.
+        assign vtls_swatch_count = option.values | map: 'swatch' | compact | size
+        assign vtls_use_swatches = false
+        if vtls_swatch_count > 0 and block.settings.show_swatches
+          assign vtls_use_swatches = true
+        endif
+        # Horizon parity (variant-option-single): an option with a single
+        # value has nothing to choose, so it prints as static "Name: Value"
+        # text rather than a one-entry dropdown or a lone pill. Swatch rows
+        # are the carve-out Horizon also makes — there the circle itself is
+        # the information, so it keeps rendering.
+        assign vtls_single_value = false
+        if option.values.size == 1 and vtls_use_swatches == false
+          assign vtls_single_value = true
+        endif
+      -%}
+      {%- if vtls_single_value -%}
+        <div class="vtls-pi__opt vtls-pi__opt--single" data-vtls-option-index="{{ forloop.index0 }}">
+          <span class="vtls-pi__label">
+            {{- option.name }}: <span class="vtls-pi__swatch-value">{{ option.selected_value }}</span>
+          </span>
+          {%- comment -%}
+            The value id still has to reach the option_values refetch: omit it
+            and the server resolves no product.selected_variant, the payload's
+            "matched" reads false and Add to cart disables itself. A checked
+            radio keeps selectedOptionValueIds()/restoreOptionSelection()
+            working unchanged. Nameless on purpose — a nameless control is
+            never posted with the add-to-cart form, and a nameless radio joins
+            no radio group, so two single-value options both stay checked.
+          {%- endcomment -%}
+          {%- assign vtls_only_value = option.values | first -%}
+          <input type="radio" value="{{ vtls_only_value.id }}" checked hidden tabindex="-1">
+        </div>
+      {%- elsif vtls_use_swatches -%}
+        <fieldset class="vtls-pi__optset">
+          <legend class="vtls-pi__label">
+            {{- option.name }}: <span class="vtls-pi__swatch-value">{{ option.selected_value }}</span>
+          </legend>
+          <div class="vtls-pi__swatches" data-vtls-option-index="{{ forloop.index0 }}">
+            {%- assign option_idx = forloop.index -%}
+            {%- for value in option.values -%}
+              {%- liquid
+                assign vtls_swatch_bg = ''
+                if value.swatch.image
+                  assign vtls_swatch_url = value.swatch.image | image_url: width: 80
+                  assign vtls_swatch_bg = 'url(' | append: vtls_swatch_url | append: ')'
+                elsif value.swatch.color
+                  assign vtls_swatch_bg = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                endif
+              -%}
+              <label
+                class="vtls-pi__swatch{% if value.selected %} is-selected{% endif %}{% unless value.available %} is-unavailable{% endunless %}"
+                title="{{ value.name | escape }}"
+              >
+                <input
+                  type="radio"
+                  name="vtls-opt-{{ section.id }}-{{ option_idx }}"
+                  value="{{ value.id }}"
+                  aria-label="{{ value.name | escape }}{% unless value.available %} - {{ unavailable_suffix | escape }}{% endunless %}"
+                  {% if value.selected %}checked{% endif %}
+                >
+                <span
+                  class="vtls-pi__swatch-dot{% if vtls_swatch_bg == '' %} is-blank{% endif %}"
+                  {% if vtls_swatch_bg != '' %}
+                    style="--vtls-swatch-bg: {{ vtls_swatch_bg }}"
+                  {% endif %}
+                ></span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </fieldset>
+      {%- elsif block.settings.picker_type == 'dropdown' -%}
+        <div class="vtls-pi__opt">
+          <label class="vtls-pi__label" for="vtls-opt-{{ section.id }}-{{ forloop.index }}">{{ option.name }}</label>
+          <select
+            id="vtls-opt-{{ section.id }}-{{ forloop.index }}"
+            class="vtls-pi__select"
+            data-vtls-option-index="{{ forloop.index0 }}"
+          >
+            {%- for value in option.values -%}
+              <option value="{{ value.id }}" {% if value.selected %}selected{% endif %}>
+                {{- value.name | escape -}}{% unless value.available %} - {{ unavailable_suffix | escape }}{% endunless %}
+              </option>
+            {%- endfor -%}
+          </select>
+        </div>
+      {%- else -%}
+        <fieldset class="vtls-pi__optset">
+          <legend class="vtls-pi__label">{{ option.name }}</legend>
+          <div class="vtls-pi__pills" data-vtls-option-index="{{ forloop.index0 }}">
+            {%- assign option_idx = forloop.index -%}
+            {%- for value in option.values -%}
+              <label class="vtls-pi__pill{% if value.selected %} is-selected{% endif %}{% unless value.available %} is-unavailable{% endunless %}">
+                <input
+                  type="radio"
+                  name="vtls-opt-{{ section.id }}-{{ option_idx }}"
+                  value="{{ value.id }}"
+                  {% if value.selected %}checked{% endif %}
+                >
+                {{ value.name | escape }}
+              </label>
+            {%- endfor -%}
+          </div>
+        </fieldset>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  {%- comment -%} Single-variant product: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Variant selector",
+  "settings": [
+    {
+      "type": "select",
+      "id": "picker_type",
+      "label": "Style",
+      "options": [
+        {
+          "value": "dropdown",
+          "label": "Dropdowns"
+        },
+        {
+          "value": "buttons",
+          "label": "Pills"
+        }
+      ],
+      "default": "dropdown"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show swatches",
+      "default": true,
+      "info": "Options with swatches set in the product admin show as color circles."
+    },
+    {
+      "type": "color",
+      "id": "selected_background_color",
+      "label": "Selected background color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.picker_type == 'buttons' }}"
+    },
+    {
+      "type": "color",
+      "id": "selected_border_color",
+      "label": "Selected border color",
+      "visible_if": "{{ block.settings.picker_type == 'buttons' }}"
+    },
+    {
+      "type": "color",
+      "id": "selected_text_color",
+      "label": "Selected text color",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.picker_type == 'buttons' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Variant selector"
+    }
+  ]
+}
+{% endschema %}

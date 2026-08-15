@@ -1,0 +1,50 @@
+{% comment %}
+  Renders Sticky Add To Cart Bar on Product Pages
+{% endcomment %}
+
+{%- if product != blank and product.available -%}
+  <div class="pro-sticky-bar" data-product-id="{{ product.id }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+    <div class="pro-sticky-bar__container">
+      <div class="pro-sticky-bar__product">
+        {%- if product.featured_image != blank -%}
+          <img 
+            src="{{ product.featured_image | image_url: width: 100 }}" 
+            alt="{{ product.title | escape }}" 
+            class="pro-sticky-bar__image"
+            width="48"
+            height="48"
+            loading="lazy"
+          >
+        {%- endif -%}
+        <div class="pro-sticky-bar__info">
+          <p class="pro-sticky-bar__title">{{ product.title }}</p>
+          <p class="pro-sticky-bar__price">{{ product.selected_or_first_available_variant.price | money }}</p>
+        </div>
+      </div>
+
+      <div class="pro-sticky-bar__actions">
+        {%- if product.variants.size > 1 -%}
+          <select class="pro-sticky-bar__select" aria-label="Select variant">
+            {%- for variant in product.variants -%}
+              <option 
+                value="{{ variant.id }}" 
+                {% if variant == product.selected_or_first_available_variant %}selected="selected"{% endif %}
+                {% unless variant.available %}disabled="disabled"{% endunless %}
+              >
+                {{ variant.title }} - {{ variant.price | money }} {% unless variant.available %}(Sold Out){% endunless %}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- endif -%}
+
+        <button type="button" class="pro-sticky-bar__button">
+          <span>Add to Cart</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+{%- endif -%}

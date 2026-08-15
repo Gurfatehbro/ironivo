@@ -1,0 +1,986 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign badge_count = block.settings.badge_count | default: 1 | plus: 0
+  assign has_badges = false
+  for i in (1..badge_count)
+    assign key = 'badge_' | append: i | append: '_text'
+    if block.settings[key] != blank
+      assign has_badges = true
+    endif
+  endfor
+  case block.settings.alignment
+    when 'center'
+      assign badges_justify = 'center'
+    when 'right'
+      assign badges_justify = 'flex-end'
+    else
+      assign badges_justify = 'flex-start'
+  endcase
+-%}
+{% style %}
+  .Vtls-{{ block.id }}.PgBadges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: {{ badges_justify }}; margin: {{ block.settings.margin_top_mobile }}px 0 {{ block.settings.margin_bottom_mobile }}px; }
+  @media (min-width: 750px) { .Vtls-{{ block.id }}.PgBadges { margin: {{ block.settings.margin_top }}px 0 {{ block.settings.margin_bottom }}px; } }
+  .Vtls-{{ block.id }} .PgBadges__Item { display: inline-flex; align-items: center; gap: 6px; padding: {{ block.settings.padding_vertical }}px {{ block.settings.padding_horizontal }}px; border-radius: {{ block.settings.radius }}px; font-size: {{ block.settings.text_size }}px; font-weight: {{ block.settings.font_weight }}; line-height: 1.2; }
+  .Vtls-{{ block.id }} .PgBadges__Icon { display: inline-flex; flex: 0 0 auto; }
+  .Vtls-{{ block.id }} .PgBadges__Icon .PgI { width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; }
+{% endstyle %}
+{%- if has_badges -%}
+  <div class="Vtls-{{ block.id }} PgBadges" {{ block.shopify_attributes }}>
+    {%- for i in (1..badge_count) -%}
+      {%- liquid
+        assign tk = 'badge_' | append: i | append: '_text'
+        assign ik = 'badge_' | append: i | append: '_icon'
+        assign sk = 'badge_' | append: i | append: '_background'
+        assign ck = 'badge_' | append: i | append: '_bg_color'
+        assign gk = 'badge_' | append: i | append: '_bg_gradient'
+        assign xk = 'badge_' | append: i | append: '_text_color'
+        assign bdk = 'badge_' | append: i | append: '_border'
+        assign bck = 'badge_' | append: i | append: '_border_color'
+        assign btext = block.settings[tk]
+      -%}
+      {%- if btext != blank -%}
+        <span class="PgBadges__Item" style="color: {{ block.settings[xk] }}; background: {% if block.settings[sk] == 'gradient' %}{{ block.settings[gk] }}{% else %}{{ block.settings[ck] }}{% endif %};{% if block.settings[bdk] != 'none' and block.settings[bdk] != blank %} border: 1px {{ block.settings[bdk] }} {{ block.settings[bck] }};{% endif %}">
+          {%- assign bicon = block.settings[ik] -%}
+          {%- if bicon != 'none' and bicon != blank -%}<span class="PgBadges__Icon"><span class="PgI PgI--{{ bicon }}" aria-hidden="true"></span></span>{%- endif -%}
+          <span class="PgBadges__Text">{{ btext }}</span>
+        </span>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  {%- comment -%} All badge text cleared: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product badges",
+  "settings": [
+    {
+      "type": "select",
+      "id": "badge_count",
+      "label": "Number of badges",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "header",
+      "content": "Badge #1"
+    },
+    {
+      "type": "select",
+      "id": "badge_1_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        }
+      ],
+      "default": "sparkle"
+    },
+    {
+      "type": "text",
+      "id": "badge_1_text",
+      "label": "Text",
+      "default": "Highlight a key product benefit",
+      "placeholder": "Key product benefit"
+    },
+    {
+      "type": "color",
+      "id": "badge_1_text_color",
+      "label": "Text color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "badge_1_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color"
+    },
+    {
+      "type": "color",
+      "id": "badge_1_bg_color",
+      "label": "Background color",
+      "default": "#EEF1EA",
+      "visible_if": "{{ block.settings.badge_1_background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "badge_1_bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.badge_1_background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_1_border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "dashed"
+    },
+    {
+      "type": "color",
+      "id": "badge_1_border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_1_border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Badge #2",
+      "visible_if": "{{ block.settings.badge_count != '1' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_2_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.badge_count != '1' }}"
+    },
+    {
+      "type": "text",
+      "id": "badge_2_text",
+      "label": "Text",
+      "placeholder": "Key product benefit",
+      "visible_if": "{{ block.settings.badge_count != '1' }}",
+      "default": "Highlight a key product benefit"
+    },
+    {
+      "type": "color",
+      "id": "badge_2_text_color",
+      "label": "Text color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_count != '1' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_2_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color",
+      "visible_if": "{{ block.settings.badge_count != '1' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_2_bg_color",
+      "label": "Background color",
+      "default": "#EEF1EA",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_2_background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "badge_2_bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_2_background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_2_border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "dashed",
+      "visible_if": "{{ block.settings.badge_count != '1' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_2_border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_2_border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Badge #3",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_3_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' }}"
+    },
+    {
+      "type": "text",
+      "id": "badge_3_text",
+      "label": "Text",
+      "placeholder": "Key product benefit",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' }}",
+      "default": "Highlight a key product benefit"
+    },
+    {
+      "type": "color",
+      "id": "badge_3_text_color",
+      "label": "Text color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_3_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_3_bg_color",
+      "label": "Background color",
+      "default": "#EEF1EA",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' and block.settings.badge_3_background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "badge_3_bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' and block.settings.badge_3_background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_3_border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "dashed",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_3_border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_count != '1' and block.settings.badge_count != '2' and block.settings.badge_3_border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Badge #4",
+      "visible_if": "{{ block.settings.badge_count == '4' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_4_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.badge_count == '4' }}"
+    },
+    {
+      "type": "text",
+      "id": "badge_4_text",
+      "label": "Text",
+      "placeholder": "Key product benefit",
+      "visible_if": "{{ block.settings.badge_count == '4' }}",
+      "default": "Highlight a key product benefit"
+    },
+    {
+      "type": "color",
+      "id": "badge_4_text_color",
+      "label": "Text color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_count == '4' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_4_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color",
+      "visible_if": "{{ block.settings.badge_count == '4' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_4_bg_color",
+      "label": "Background color",
+      "default": "#EEF1EA",
+      "visible_if": "{{ block.settings.badge_count == '4' and block.settings.badge_4_background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "badge_4_bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.badge_count == '4' and block.settings.badge_4_background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "badge_4_border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "dashed",
+      "visible_if": "{{ block.settings.badge_count == '4' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_4_border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.badge_count == '4' and block.settings.badge_4_border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Text style",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Top - bottom padding",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Left - right padding",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product badges"
+    }
+  ]
+}
+{% endschema %}

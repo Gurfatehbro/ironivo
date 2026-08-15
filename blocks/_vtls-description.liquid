@@ -1,0 +1,24 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- if product.description != blank -%}
+  {%- comment -%}
+    product__description (Dawn's class) is carried on purpose: it is a
+    top verified selector of the Vitals ProductDescription document
+    injector, so "under description" widget placements resolve on
+    this section too.
+  {%- endcomment -%}
+  <div class="vtls-pi__desc product__description rte" {{ block.shopify_attributes }}>{{ product.description }}</div>
+{%- else -%}
+  {%- comment -%} No description on this product: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Description",
+  "presets": [
+    {
+      "name": "Description"
+    }
+  ]
+}
+{% endschema %}

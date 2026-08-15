@@ -1,0 +1,2198 @@
+{%- comment -%} Vitals Product Information block — refined implementation grafted from MR !14268 (section-local port of the parked PageGen app block). {%- endcomment -%}
+{%- liquid
+  assign rea_count = block.settings.icon_count | plus: 0
+  assign rea_has_items = false
+  for i in (1..rea_count)
+    assign k = 'item_' | append: i | append: '_title'
+    assign rea_probe = block.settings[k] | strip_html | strip
+    if rea_probe != blank
+      assign rea_has_items = true
+    endif
+  endfor
+  case block.settings.alignment
+    when 'left'
+      assign rea_align = 'flex-start'
+    when 'right'
+      assign rea_align = 'flex-end'
+    else
+      assign rea_align = 'center'
+  endcase
+  comment
+    'vertical' was removed from the Layout options — stored values render as
+    the list layout locked to one icon per row (same geometry the option had).
+  endcomment
+  assign rea_design = block.settings.design
+  if rea_design == 'vertical'
+    assign rea_design = 'horizontal'
+    assign rea_cols = 1
+  elsif rea_design == 'boxed'
+    assign rea_cols = block.settings.per_row_box | plus: 0
+  else
+    assign rea_cols = block.settings.per_row | plus: 0
+  endif
+  assign rea_cols_mobile = block.settings.per_row_mobile | plus: 0
+  assign rea_gap = block.settings.icon_gap
+  comment
+    List and Box carry separate frame settings (same pattern as per_row vs
+    per_row_box) so List can default to no frame while Box keeps its card look.
+  endcomment
+  if rea_design == 'horizontal'
+    assign rea_frame_bg = block.settings.background_list
+    assign rea_frame_bg_color = block.settings.bg_color_list
+    assign rea_frame_bg_gradient = block.settings.bg_gradient_list
+    assign rea_frame_border = block.settings.border_list
+    assign rea_frame_border_color = block.settings.border_color_list
+    assign rea_frame_radius = block.settings.radius_list
+    assign rea_frame_pad = block.settings.padding_vertical_list
+  else
+    assign rea_frame_bg = block.settings.background
+    assign rea_frame_bg_color = block.settings.bg_color
+    assign rea_frame_bg_gradient = block.settings.bg_gradient
+    assign rea_frame_border = block.settings.border
+    assign rea_frame_border_color = block.settings.border_color
+    assign rea_frame_radius = block.settings.radius
+    assign rea_frame_pad = block.settings.padding_vertical
+  endif
+  assign rea_card_bg = 'transparent'
+  if rea_frame_bg == 'color'
+    assign rea_card_bg = rea_frame_bg_color
+  elsif rea_frame_bg == 'gradient'
+    assign rea_card_bg = rea_frame_bg_gradient
+  endif
+  comment
+    Cards and the outer container only get padding while something makes
+    them visible (background or border) — a transparent frame would misalign
+    the content with the page.
+  endcomment
+  assign rea_pad_v = 0
+  assign rea_pad_h = 0
+  if rea_frame_bg != 'none' or rea_frame_border != 'none'
+    assign rea_pad_v = rea_frame_pad
+    assign rea_pad_h = 12
+  endif
+  assign rea_container_bg = ''
+  if block.settings.container_background == 'color'
+    assign rea_container_bg = block.settings.container_bg_color
+  elsif block.settings.container_background == 'gradient'
+    assign rea_container_bg = block.settings.container_bg_gradient
+  endif
+  assign rea_container_framed = false
+  if rea_container_bg != '' or block.settings.container_border != 'none'
+    assign rea_container_framed = true
+  endif
+-%}
+{% style %}
+  .Vtls-{{ block.id }}.PgReassure { display: flex; flex-wrap: wrap; gap: {{ rea_gap }}px; color: {{ block.settings.text_color }}; margin: {{ block.settings.margin_top_mobile }}px 0 {{ block.settings.margin_bottom_mobile }}px;{% if rea_container_bg != blank %} background: {{ rea_container_bg }};{% endif %}{% if block.settings.container_border != 'none' %} border: 1px {{ block.settings.container_border }} {{ block.settings.container_border_color }};{% endif %}{% if rea_container_framed %} border-radius: {{ block.settings.container_radius }}px; padding: 16px;{% endif %} }
+  @media (min-width: 750px) { .Vtls-{{ block.id }}.PgReassure { margin: {{ block.settings.margin_top }}px 0 {{ block.settings.margin_bottom }}px; } }
+  /* Equal flex-basis + grow keeps every cell in a row the same width and lets a
+     short last row stretch edge-to-edge: 4 icons under "3 per row" render 3+1
+     (full width), 5 render 3+2, and 2 icons under "3 per row" split 50/50. */
+  /* border-box: the basis calc must include the cards' padding/border (either
+     layout can be framed) — content-box sizing overflows the row and wraps
+     3-per-row as 2+1 on themes without a global reset. */
+  .Vtls-{{ block.id }} .PgReassure__Item { box-sizing: border-box; flex: 1 1 calc((100% - {{ rea_gap }}px * ({{ rea_cols_mobile }} - 1)) / {{ rea_cols_mobile }}); min-width: 0; padding: {{ rea_pad_v }}px {{ rea_pad_h }}px; background: {{ rea_card_bg }}; border-radius: {{ rea_frame_radius }}px;{% if rea_frame_border != 'none' %} border: 1px {{ rea_frame_border }} {{ rea_frame_border_color }};{% endif %} }
+  @media (min-width: 750px) { .Vtls-{{ block.id }} .PgReassure__Item { flex-basis: calc((100% - {{ rea_gap }}px * ({{ rea_cols }} - 1)) / {{ rea_cols }}); } }
+  .Vtls-{{ block.id }} .PgReassure__Icon { flex: 0 0 auto; display: inline-flex; align-items: center; color: {{ block.settings.icon_color }}; }
+  .Vtls-{{ block.id }} .PgReassure__Icon .PgI { width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; }
+  .Vtls-{{ block.id }} .PgReassure__Icon img { display: block; width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; object-fit: contain; }
+  .Vtls-{{ block.id }} .PgReassure__Title { font-size: {{ block.settings.text_size }}px; font-weight: {{ block.settings.font_weight }}; line-height: 1.3; min-width: 0; }
+  /* inline_richtext allows links — keep them on the configured text color. */
+  .Vtls-{{ block.id }} .PgReassure__Title a { color: inherit; }
+  .Vtls-{{ block.id }}.PgReassure--horizontal .PgReassure__Item { display: flex; align-items: center; gap: 8px; justify-content: {{ rea_align }}; }
+{%- if block.settings.alignment == 'right' %}
+  /* Right-aligned list rows put the icon on the outer edge. */
+  .Vtls-{{ block.id }}.PgReassure--horizontal .PgReassure__Item { flex-direction: row-reverse; justify-content: flex-start; }
+{%- endif %}
+  .Vtls-{{ block.id }}.PgReassure--boxed .PgReassure__Item { display: flex; flex-direction: column; gap: 6px; align-items: {{ rea_align }}; text-align: {{ block.settings.alignment }}; }
+{% endstyle %}
+{%- if rea_has_items -%}
+  <div class="Vtls-{{ block.id }} PgReassure PgReassure--{{ rea_design }}" {{ block.shopify_attributes }}>
+    {%- for i in (1..rea_count) -%}
+      {%- liquid
+        assign tk = 'item_' | append: i | append: '_title'
+        assign ik = 'item_' | append: i | append: '_icon'
+        assign sk = 'item_' | append: i | append: '_icon_style'
+        assign ck = 'item_' | append: i | append: '_custom_icon'
+        assign rea_title = block.settings[tk]
+        assign rea_title_text = rea_title | strip_html | strip
+        assign rea_icon_style = block.settings[sk]
+        assign rea_custom_icon = block.settings[ck]
+      -%}
+      {%- if rea_title_text != blank -%}
+        <div class="PgReassure__Item">
+          {%- if rea_icon_style == 'upload' -%}
+            {%- if rea_custom_icon != blank -%}
+              <span class="PgReassure__Icon">{{ rea_custom_icon | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}</span>
+            {%- endif -%}
+          {%- else -%}
+            {%- assign rea_icon = block.settings[ik] -%}
+            {%- if rea_icon != 'none' and rea_icon != blank -%}<span class="PgReassure__Icon"><span class="PgI PgI--{{ rea_icon }}" aria-hidden="true"></span></span>{%- endif -%}
+          {%- endif -%}
+          <span class="PgReassure__Title">{{ rea_title }}</span>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  {%- comment -%} All items cleared: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Value Icons",
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon_count",
+      "label": "Number of icons",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "header",
+      "content": "Icon #1"
+    },
+    {
+      "type": "select",
+      "id": "item_1_icon_style",
+      "label": "Icon style #1",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "upload",
+          "label": "Upload"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "item_1_icon",
+      "label": "Icon #1",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        }
+      ],
+      "default": "shipping_fast",
+      "visible_if": "{{ block.settings.item_1_icon_style == 'icon' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_1_custom_icon",
+      "label": "Upload your image",
+      "info": "Recommended aspect ratio is square (1:1)",
+      "visible_if": "{{ block.settings.item_1_icon_style == 'upload' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "item_1_title",
+      "label": "Icon text #1",
+      "default": "Fast Delivery"
+    },
+    {
+      "type": "header",
+      "content": "Icon #2",
+      "visible_if": "{{ block.settings.icon_count != '1' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_2_icon_style",
+      "label": "Icon style #2",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "upload",
+          "label": "Upload"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ block.settings.icon_count != '1' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_2_icon",
+      "label": "Icon #2",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        }
+      ],
+      "default": "globe",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.item_2_icon_style == 'icon' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_2_custom_icon",
+      "label": "Upload your image",
+      "info": "Recommended aspect ratio is square (1:1)",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.item_2_icon_style == 'upload' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "item_2_title",
+      "label": "Icon text #2",
+      "default": "Ships Worldwide",
+      "visible_if": "{{ block.settings.icon_count != '1' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icon #3",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_3_icon_style",
+      "label": "Icon style #3",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "upload",
+          "label": "Upload"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_3_icon",
+      "label": "Icon #3",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        }
+      ],
+      "default": "lock",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.item_3_icon_style == 'icon' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_3_custom_icon",
+      "label": "Upload your image",
+      "info": "Recommended aspect ratio is square (1:1)",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.item_3_icon_style == 'upload' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "item_3_title",
+      "label": "Icon text #3",
+      "default": "Safe Payment",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icon #4",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_4_icon_style",
+      "label": "Icon style #4",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "upload",
+          "label": "Upload"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_4_icon",
+      "label": "Icon #4",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        }
+      ],
+      "default": "check-circle",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.item_4_icon_style == 'icon' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_4_custom_icon",
+      "label": "Upload your image",
+      "info": "Recommended aspect ratio is square (1:1)",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.item_4_icon_style == 'upload' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "item_4_title",
+      "label": "Icon text #4",
+      "default": "Value icon",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icon #5",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.icon_count != '4' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_5_icon_style",
+      "label": "Icon style #5",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "upload",
+          "label": "Upload"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.icon_count != '4' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_5_icon",
+      "label": "Icon #5",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        }
+      ],
+      "default": "check-circle",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.icon_count != '4' and block.settings.item_5_icon_style == 'icon' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_5_custom_icon",
+      "label": "Upload your image",
+      "info": "Recommended aspect ratio is square (1:1)",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.icon_count != '4' and block.settings.item_5_icon_style == 'upload' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "item_5_title",
+      "label": "Icon text #5",
+      "default": "Value icon",
+      "visible_if": "{{ block.settings.icon_count != '1' and block.settings.icon_count != '2' and block.settings.icon_count != '3' and block.settings.icon_count != '4' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icon #6",
+      "visible_if": "{{ block.settings.icon_count == '6' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_6_icon_style",
+      "label": "Icon style #6",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "upload",
+          "label": "Upload"
+        }
+      ],
+      "default": "icon",
+      "visible_if": "{{ block.settings.icon_count == '6' }}"
+    },
+    {
+      "type": "select",
+      "id": "item_6_icon",
+      "label": "Icon #6",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "lock",
+          "label": "Secure checkout"
+        },
+        {
+          "value": "shield_alt",
+          "label": "Buyer protection"
+        },
+        {
+          "value": "user_shield",
+          "label": "Data privacy"
+        },
+        {
+          "value": "check_circle",
+          "label": "Satisfaction guarantee"
+        },
+        {
+          "value": "key",
+          "label": "Verified and secure"
+        },
+        {
+          "value": "shipping_fast",
+          "label": "Fast shipping"
+        },
+        {
+          "value": "box",
+          "label": "Discreet packaging"
+        },
+        {
+          "value": "truck",
+          "label": "Free delivery"
+        },
+        {
+          "value": "route",
+          "label": "Trackable orders"
+        },
+        {
+          "value": "headset",
+          "label": "Customer support"
+        },
+        {
+          "value": "envelope",
+          "label": "Email us"
+        },
+        {
+          "value": "comments",
+          "label": "Live chat"
+        },
+        {
+          "value": "question_circle",
+          "label": "FAQs"
+        },
+        {
+          "value": "map_marker_alt",
+          "label": "Our location"
+        },
+        {
+          "value": "award",
+          "label": "Certified product"
+        },
+        {
+          "value": "gem",
+          "label": "Premium quality"
+        },
+        {
+          "value": "hands",
+          "label": "Handmade"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Customer approved"
+        },
+        {
+          "value": "star",
+          "label": "Top rated"
+        },
+        {
+          "value": "undo_alt",
+          "label": "Easy returns"
+        },
+        {
+          "value": "calendar_check",
+          "label": "Money back guarantee"
+        },
+        {
+          "value": "sync_alt",
+          "label": "Exchange policy"
+        },
+        {
+          "value": "handshake",
+          "label": "Hassle-free policy"
+        },
+        {
+          "value": "seedling",
+          "label": "Eco-friendly"
+        },
+        {
+          "value": "recycle",
+          "label": "Recycled materials"
+        },
+        {
+          "value": "hand-holding-heart",
+          "label": "Ethical brand"
+        },
+        {
+          "value": "globe",
+          "label": "Globally sourced"
+        },
+        {
+          "value": "map_marked_alt",
+          "label": "Locally sourced"
+        },
+        {
+          "value": "wallet",
+          "label": "Payment options"
+        },
+        {
+          "value": "credit_card",
+          "label": "Buy now, pay later"
+        },
+        {
+          "value": "receipt",
+          "label": "Purchase confirmation"
+        },
+        {
+          "value": "lightbulb",
+          "label": "Innovative"
+        },
+        {
+          "value": "magic",
+          "label": "Easy to use"
+        },
+        {
+          "value": "pencil_ruler",
+          "label": "Customizable"
+        },
+        {
+          "value": "store",
+          "label": "Store"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "percent",
+          "label": "Exclusive deals"
+        },
+        {
+          "value": "ruler-combined",
+          "label": "Product size"
+        },
+        {
+          "value": "palette",
+          "label": "Product color"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "flower",
+          "label": "Flower"
+        },
+        {
+          "value": "bolt",
+          "label": "Bolt"
+        },
+        {
+          "value": "sun",
+          "label": "Sun"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "dot-circle",
+          "label": "Dot circle"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "asterisk",
+          "label": "Asterisk"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check circle"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        }
+      ],
+      "default": "check-circle",
+      "visible_if": "{{ block.settings.icon_count == '6' and block.settings.item_6_icon_style == 'icon' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_6_custom_icon",
+      "label": "Upload your image",
+      "info": "Recommended aspect ratio is square (1:1)",
+      "visible_if": "{{ block.settings.icon_count == '6' and block.settings.item_6_icon_style == 'upload' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "item_6_title",
+      "label": "Icon text #6",
+      "default": "Value icon",
+      "visible_if": "{{ block.settings.icon_count == '6' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icons & Text"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#222222",
+      "info": "Does not apply to uploaded custom icons."
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Text style",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Icon box"
+    },
+    {
+      "type": "select",
+      "id": "design",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "List"
+        },
+        {
+          "value": "boxed",
+          "label": "Box"
+        }
+      ],
+      "default": "boxed"
+    },
+    {
+      "type": "select",
+      "id": "per_row",
+      "label": "Icons per row (desktop)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "1",
+      "visible_if": "{{ block.settings.design == 'horizontal' }}"
+    },
+    {
+      "type": "select",
+      "id": "per_row_box",
+      "label": "Icons per row (desktop)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "3",
+      "visible_if": "{{ block.settings.design == 'boxed' }}"
+    },
+    {
+      "type": "select",
+      "id": "per_row_mobile",
+      "label": "Icons per row (mobile)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "color",
+      "visible_if": "{{ block.settings.design == 'boxed' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_list",
+      "label": "Background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.design == 'horizontal' }}"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F5F5F5",
+      "visible_if": "{{ block.settings.design == 'boxed' and block.settings.background == 'color' }}"
+    },
+    {
+      "type": "color",
+      "id": "bg_color_list",
+      "label": "Background color",
+      "default": "#F5F5F5",
+      "visible_if": "{{ block.settings.design == 'horizontal' and block.settings.background_list == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.design == 'boxed' and block.settings.background == 'gradient' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient_list",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.design == 'horizontal' and block.settings.background_list == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.design == 'boxed' }}"
+    },
+    {
+      "type": "select",
+      "id": "border_list",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.design == 'horizontal' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.design == 'boxed' and block.settings.border != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color_list",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.design == 'horizontal' and block.settings.border_list != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Top - bottom padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.design == 'boxed' and block.settings.background != 'none' or block.settings.border != 'none' and block.settings.design == 'boxed' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_list",
+      "label": "Top - bottom padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.design == 'horizontal' and block.settings.background_list != 'none' or block.settings.border_list != 'none' and block.settings.design == 'horizontal' }}"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.design == 'boxed' and block.settings.background != 'none' or block.settings.border != 'none' and block.settings.design == 'boxed' }}"
+    },
+    {
+      "type": "range",
+      "id": "radius_list",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.design == 'horizontal' and block.settings.background_list != 'none' or block.settings.border_list != 'none' and block.settings.design == 'horizontal' }}"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "container_background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "container_bg_color",
+      "label": "Background color",
+      "default": "#F5F5F5",
+      "visible_if": "{{ block.settings.container_background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "container_bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.container_background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "container_border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "container_border_color",
+      "label": "Border color",
+      "default": "#d6d6d6",
+      "visible_if": "{{ block.settings.container_border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "container_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.container_background != 'none' or block.settings.container_border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "label": "Space between icons",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Value Icons"
+    }
+  ]
+}
+{% endschema %}

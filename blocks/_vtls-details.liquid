@@ -1,0 +1,402 @@
+{%- comment -%}
+  Details group — the right-hand column of the product grid. Hosts the
+  product-information child blocks (title, price, selectors, buy buttons, ...)
+  plus app blocks; the section's grid lays it out next to Product media.
+
+  CON-3353 group settings: the column is a flex column so "Gap" spaces the
+  child blocks (display:none editor anchors and inline <style> tags emitted
+  by child blocks don't create phantom gaps, which a margin owl would).
+  Text size and Content alignment are the template defaults child blocks
+  inherit; blocks with their own alignment/size settings keep overriding
+  them. --vtls-pi-justify carries the alignment into flex rows that
+  text-align can't reach (price row, variant pills — consumed by the
+  section's base CSS).
+{%- endcomment -%}
+{%- liquid
+  case block.settings.alignment
+    when 'center'
+      assign info_justify = 'center'
+    when 'right'
+      assign info_justify = 'flex-end'
+    else
+      assign info_justify = 'flex-start'
+  endcase
+-%}
+{% style %}
+  .Vtls-{{ block.id }}.vtls-pi__info {
+    display: flex;
+    flex-direction: column;
+    row-gap: {{ block.settings.gap }}px;
+    text-align: {{ block.settings.alignment }};
+    --vtls-pi-justify: {{ info_justify }};
+    font-size: {{ block.settings.text_size }}px;
+    {%- case block.settings.background_type %}
+    {%- when 'color' %}
+    background: {{ block.settings.background_color }};
+    {%- when 'gradient' %}
+    background: {{ block.settings.background_gradient }};
+    {%- endcase %}
+    {%- if block.settings.border_type == 'solid' %}
+    border: 1px solid {{ block.settings.border_color }};
+    {%- endif %}
+    {%- if block.settings.background_type != 'none' or block.settings.border_type != 'none' %}
+    border-radius: {{ block.settings.corner_radius }}px;
+    {%- endif %}
+    padding: {{ block.settings.padding_top_mobile }}px {{ block.settings.padding_right_mobile }}px {{ block.settings.padding_bottom_mobile }}px {{ block.settings.padding_left_mobile }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .Vtls-{{ block.id }}.vtls-pi__info {
+      padding: {{ block.settings.padding_top }}px {{ block.settings.padding_right }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_left }}px;
+    }
+  }
+  /* Older section builds ship a :where() margin owl between info-column
+     blocks; the flex row-gap above replaces it, so zero it here (single
+     class stays below child blocks' own two-class margin rules). */
+  .Vtls-{{ block.id }} > * + * { margin-top: 0; }
+  /* Empty-state blocks (cleared badges/benefits, plan-less purchase options)
+     keep a hidden editor anchor - their wrappers must not consume a gap slot. */
+  /* Matched on the anchor being PRESENT, not :only-child: most of these blocks
+     emit their inline stylesheet beside the anchor, so the anchor is never an
+     only child and :only-child silently collapsed nothing. A wrapper can never
+     hold both an anchor and real content (the anchor IS the else branch), so
+     presence is precise.
+     SKU and Inventory status keep a single [hidden] <p> instead of an anchor,
+     so they need the :only-child form - it keeps the rule to blocks whose
+     entire output is that one hidden element (neither emits a stylesheet). */
+  .Vtls-{{ block.id }}.vtls-pi__info > *:empty,
+  .Vtls-{{ block.id }}.vtls-pi__info > *:has(> .vtls-pi__empty-anchor),
+  .Vtls-{{ block.id }}.vtls-pi__info > *:has(> [hidden]:only-child) { display: none; }
+  /* Flex rows don't react to the group's text-align — align them via the
+     justify var so they follow "Content alignment" too. */
+  .Vtls-{{ block.id }} .vtls-pi__price-row,
+  .Vtls-{{ block.id }} .vtls-pi__pills {
+    justify-content: var(--vtls-pi-justify, flex-start);
+  }
+{% endstyle %}
+<div class="Vtls-{{ block.id }} vtls-pi__info" data-vtls-info {{ block.shopify_attributes }}>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Details",
+  "blocks": [
+    {
+      "type": "_vtls-title"
+    },
+    {
+      "type": "_vtls-text"
+    },
+    {
+      "type": "_vtls-price"
+    },
+    {
+      "type": "_vtls-divider"
+    },
+    {
+      "type": "_vtls-selectors"
+    },
+    {
+      "type": "_vtls-buy-buttons"
+    },
+    {
+      "type": "_vtls-description"
+    },
+    {
+      "type": "_vtls-sku"
+    },
+    {
+      "type": "_vtls-inventory"
+    },
+    {
+      "type": "_vtls-collapsible-tab"
+    },
+    {
+      "type": "_vtls-badges"
+    },
+    {
+      "type": "_vtls-benefits"
+    },
+    {
+      "type": "_vtls-product-tabs"
+    },
+    {
+      "type": "_vtls-reassurance"
+    },
+    {
+      "type": "_vtls-information-banner"
+    },
+    {
+      "type": "_vtls-custom-liquid"
+    },
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Space between blocks",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "background_type",
+      "label": "Background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.background_type == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.background_type == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "border_type",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.border_type == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.background_type != 'none' or block.settings.border_type != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "select",
+      "id": "spacing_view",
+      "label": "Spacings",
+      "options": [
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
+      ],
+      "default": "desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.spacing_view == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.spacing_view == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.spacing_view == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.spacing_view == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.spacing_view == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.spacing_view == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "label": "Left padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.spacing_view == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "label": "Right padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.spacing_view == 'mobile' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Details",
+      "blocks": [
+        {
+          "type": "_vtls-title"
+        },
+        {
+          "type": "_vtls-price"
+        },
+        {
+          "type": "_vtls-badges"
+        },
+        {
+          "type": "_vtls-benefits"
+        },
+        {
+          "type": "_vtls-selectors",
+          "blocks": [
+            {
+              "type": "_vtls-variant-picker"
+            },
+            {
+              "type": "_vtls-quantity-selector"
+            }
+          ]
+        },
+        {
+          "type": "_vtls-buy-buttons"
+        },
+        {
+          "type": "_vtls-product-tabs"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

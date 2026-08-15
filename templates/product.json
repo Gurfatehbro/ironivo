@@ -1,0 +1,331 @@
+{
+    "sections": {
+        "main": {
+            "type": "main-product",
+            "blocks": {
+                "vendor": {
+                    "type": "text",
+                    "disabled": true,
+                    "settings": {
+                        "text": "{{ product.vendor }}",
+                        "text_style": "uppercase"
+                    }
+                },
+                "title": {
+                    "type": "title",
+                    "settings": {}
+                },
+                "price": {
+                    "type": "price",
+                    "settings": {}
+                },
+                "text_x3WMzr": {
+                    "type": "text",
+                    "disabled": true,
+                    "settings": {
+                        "text": "Power that goes wherever you do!",
+                        "text_style": "subtitle"
+                    }
+                },
+                "text_4bHUwq": {
+                    "type": "text",
+                    "disabled": true,
+                    "settings": {
+                        "text": "\u2713 Quick and reliable shipping",
+                        "text_style": "body"
+                    }
+                },
+                "text_ecfN8g": {
+                    "type": "text",
+                    "disabled": true,
+                    "settings": {
+                        "text": "\u2713 24\/7 customer support",
+                        "text_style": "body"
+                    }
+                },
+                "text_QDTnCT": {
+                    "type": "text",
+                    "disabled": true,
+                    "settings": {
+                        "text": "\u2713 Hassle-free returns",
+                        "text_style": "body"
+                    }
+                },
+                "variant_picker": {
+                    "type": "variant_picker",
+                    "settings": {
+                        "picker_type": "dropdown",
+                        "swatch_shape": "square"
+                    }
+                },
+                "quantity_selector": {
+                    "type": "quantity_selector",
+                    "disabled": true,
+                    "settings": {}
+                },
+                "buy_buttons": {
+                    "type": "buy_buttons",
+                    "settings": {
+                        "show_dynamic_checkout": false,
+                        "show_gift_card_recipient": true
+                    }
+                },
+                "inventory_KdTeE3": {
+                    "type": "inventory",
+                    "disabled": true,
+                    "settings": {
+                        "text_style": "uppercase",
+                        "inventory_threshold": 10,
+                        "show_inventory_quantity": true
+                    }
+                },
+                "vitals_payment_logos_QngE6E": {
+                    "type": "shopify:\/\/apps\/vitals\/blocks\/payment-logos\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+                    "settings": {}
+                },
+                "description": {
+                    "type": "description",
+                    "settings": {}
+                },
+                "vitals_ub_product_bundles_GehXeE": {
+                    "type": "shopify:\/\/apps\/vitals\/blocks\/ub-product-bundles\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+                    "settings": {}
+                },
+                "collapsible_tab_faXNnR": {
+                    "type": "collapsible_tab",
+                    "disabled": true,
+                    "settings": {
+                        "heading": "Payment",
+                        "icon": "price_tag",
+                        "content": "<p><strong>Payment Methods<\/strong><\/p><p>We offer a variety of secure and convenient payment options to make your checkout experience smooth and worry-free.<\/p><p><strong>Accepted Payment Methods:<\/strong><\/p><ul><li>Visa, MasterCard, American Express, Discover<br\/><\/li><li>Apple Pay, Google Pay, Shop Pay<br\/><\/li><li>Fast and secure checkout with your PayPal account<br\/><\/li><li>Available through Shop Pay Installments or other partners (subject to eligibility)<br\/><\/li><li>May be available depending on your region<br\/><\/li><\/ul><p>All payments are processed securely through encrypted channels. We do not store or have access to your full payment information.<\/p><p>If you have any questions or issues at checkout, please contact us at <a><strong>support@example.com<\/strong><\/a>.<\/p>",
+                        "page": ""
+                    }
+                },
+                "collapsible_tab_8b9zJT": {
+                    "type": "collapsible_tab",
+                    "disabled": true,
+                    "settings": {
+                        "heading": "Returns",
+                        "icon": "return",
+                        "content": "<p>We want you to be completely satisfied with your purchase. If for any reason you are not, you may return eligible items within <strong>30 days<\/strong> of delivery for a refund or exchange.<\/p><p>To be eligible for a return, the item must be unused, in its original packaging, and in the same condition you received it. Proof of purchase is required.<\/p><p>Please contact our support team at <a><strong>support@example.com<\/strong><\/a> to initiate a return or to ask any questions. Once your return is received and inspected, we will notify you of the approval or rejection of your refund.<\/p><p>Refunds are processed to the original method of payment within <strong>5\u201310 business days<\/strong>. Please note that return shipping costs are the responsibility of the customer unless the item is damaged or incorrect.<\/p>",
+                        "page": ""
+                    }
+                },
+                "collapsible_tab_MNhrfD": {
+                    "type": "collapsible_tab",
+                    "disabled": true,
+                    "settings": {
+                        "heading": "Shipping",
+                        "icon": "truck",
+                        "content": "<p>We\u2019re committed to delivering your order as quickly and efficiently as possible.<\/p><p><strong>Processing Time:<\/strong><br\/><br\/>All orders are processed within <strong>1\u20133 business days<\/strong>. Once your order is shipped, you\u2019ll receive a confirmation email with tracking details.<\/p><p><strong>Shipping Times:<\/strong><\/p><ul><li>5\u201310 business days<br\/><\/li><li>2\u20135 business days<br\/><br\/>(<em>Delivery times may vary depending on your location and shipping method selected at checkout.<\/em>)<br\/><\/li><\/ul><p><strong>Shipping Rates:<\/strong><br\/><br\/>Shipping rates are calculated at checkout based on your location and selected service. We offer <strong>free standard shipping<\/strong> on orders over <strong>$50<\/strong>.<\/p><p><strong>International Shipping:<\/strong><br\/><br\/>We ship worldwide. International orders may be subject to customs fees, duties, or taxes which are the responsibility of the customer.<\/p><p><strong>Lost or Delayed Packages:<\/strong><br\/><br\/>If your order is delayed or missing, please contact us at <a><strong>support@example.com<\/strong><\/a> and we\u2019ll assist you in resolving the issue.<\/p>",
+                        "page": ""
+                    }
+                }
+            },
+            "block_order": [
+                "vendor",
+                "title",
+                "price",
+                "text_x3WMzr",
+                "text_4bHUwq",
+                "text_ecfN8g",
+                "text_QDTnCT",
+                "variant_picker",
+                "quantity_selector",
+                "buy_buttons",
+                "inventory_KdTeE3",
+                "vitals_payment_logos_QngE6E",
+                "description",
+                "vitals_ub_product_bundles_GehXeE",
+                "collapsible_tab_faXNnR",
+                "collapsible_tab_8b9zJT",
+                "collapsible_tab_MNhrfD"
+            ],
+            "settings": {
+                "enable_sticky_info": true,
+                "color_scheme": "scheme-1",
+                "media_size": "medium",
+                "constrain_to_viewport": true,
+                "media_fit": "contain",
+                "gallery_layout": "thumbnail",
+                "mobile_thumbnails": "hide",
+                "media_position": "left",
+                "image_zoom": "lightbox",
+                "hide_variants": true,
+                "enable_video_looping": false,
+                "padding_top": 36,
+                "padding_bottom": 12
+            }
+        },
+        "vitals_ce7789ea_cRgJ6V": {
+            "type": "vitals-ce7789ea",
+            "blocks": {
+                "icon_EFh33F": {
+                    "type": "icon",
+                    "settings": {
+                        "icon_type": "icon",
+                        "icon": "shield_alt",
+                        "font_awesome": "",
+                        "icon_title": "Secure Checkout",
+                        "icon_description": "Safe and easy payments every time"
+                    }
+                },
+                "icon_KrwaUg": {
+                    "type": "icon",
+                    "settings": {
+                        "icon_type": "icon",
+                        "icon": "shipping_fast",
+                        "font_awesome": "",
+                        "icon_title": "Fast Shipping",
+                        "icon_description": "Get your order delivered quickly"
+                    }
+                },
+                "icon_8QqKcB": {
+                    "type": "icon",
+                    "settings": {
+                        "icon_type": "icon",
+                        "icon": "headset",
+                        "font_awesome": "",
+                        "icon_title": "Customer Support",
+                        "icon_description": "Friendly help whenever you need it"
+                    }
+                },
+                "icon_qgMUAW": {
+                    "type": "icon",
+                    "settings": {
+                        "icon_type": "icon",
+                        "icon": "undo_alt",
+                        "font_awesome": "",
+                        "icon_title": "Easy Returns",
+                        "icon_description": "Shop with confidence, hassle-free"
+                    }
+                }
+            },
+            "block_order": [
+                "icon_EFh33F",
+                "icon_KrwaUg",
+                "icon_8QqKcB",
+                "icon_qgMUAW"
+            ],
+            "name": "\ud83e\udde1 Vitals: Value Icons",
+            "settings": {
+                "icon_color": "#222222",
+                "icon_size": 24,
+                "icon_title_size": "16",
+                "icon_title_color": "#222222",
+                "icon_description_size": "14",
+                "icon_description_color": "#222222",
+                "icons_per_row_desktop": 4,
+                "icons_mobile_layout": "2",
+                "space_between_icons": 24,
+                "space_between_rows": 64,
+                "space_between_rows_mobile": 40,
+                "heading": "",
+                "heading_size": "32",
+                "heading_style": "regular",
+                "heading_alignment": "center",
+                "heading_color": "#222222",
+                "section_background_style": "color",
+                "section_background": "#f3f3f3",
+                "section_background_gradient": "linear-gradient(to right, #fed951, #ff46c7)",
+                "section_background_animation": false,
+                "overlay_color": "#222222",
+                "overlay_opacity": 0,
+                "section_width": 70,
+                "section_max_width": "",
+                "spacing_type": "desktop",
+                "padding_top": 40,
+                "padding_bottom": 40,
+                "margin_top": 80,
+                "margin_bottom": 0,
+                "padding_top_mobile": 20,
+                "padding_bottom_mobile": 20,
+                "margin_top_mobile": 0,
+                "margin_bottom_mobile": 0
+            }
+        },
+        "related-products": {
+            "type": "related-products",
+            "disabled": true,
+            "settings": {
+                "heading": "You may also like",
+                "heading_size": "h2",
+                "products_to_show": 4,
+                "columns_desktop": 4,
+                "columns_mobile": "2",
+                "color_scheme": "scheme-1",
+                "image_ratio": "square",
+                "image_shape": "default",
+                "show_secondary_image": true,
+                "show_vendor": false,
+                "show_rating": false,
+                "padding_top": 36,
+                "padding_bottom": 28
+            }
+        },
+        "1754918266551e3710": {
+            "type": "apps",
+            "settings": {
+                "include_margins": true
+            }
+        },
+        "175454588062e90c69": {
+            "type": "apps",
+            "blocks": {
+                "vitals_product_reviews_aNr3Y3": {
+                    "type": "shopify:\/\/apps\/vitals\/blocks\/product-reviews\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+                    "settings": {
+                        "hide_mock_data": false
+                    }
+                }
+            },
+            "block_order": [
+                "vitals_product_reviews_aNr3Y3"
+            ],
+            "settings": {
+                "include_margins": true
+            }
+        },
+        "17545459657e872350": {
+            "type": "apps",
+            "blocks": {
+                "vitals_related_products_gcppJ6": {
+                    "type": "shopify:\/\/apps\/vitals\/blocks\/related-products\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+                    "settings": {}
+                }
+            },
+            "block_order": [
+                "vitals_related_products_gcppJ6"
+            ],
+            "settings": {
+                "include_margins": true
+            }
+        },
+        "1754546004702baa6d": {
+            "type": "apps",
+            "blocks": {
+                "vitals_recently_viewed_3e9nfq": {
+                    "type": "shopify:\/\/apps\/vitals\/blocks\/recently-viewed\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+                    "settings": {
+                        "hide_mock_data": false
+                    }
+                }
+            },
+            "block_order": [
+                "vitals_recently_viewed_3e9nfq"
+            ],
+            "settings": {
+                "include_margins": true
+            }
+        }
+    },
+    "order": [
+        "main",
+        "vitals_ce7789ea_cRgJ6V",
+        "related-products",
+        "1754918266551e3710",
+        "175454588062e90c69",
+        "17545459657e872350",
+        "1754546004702baa6d"
+    ]
+}

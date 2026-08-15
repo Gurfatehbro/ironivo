@@ -1,0 +1,447 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign ben_count = block.settings.benefit_count | default: 3 | plus: 0
+  assign ben_has_items = false
+  for i in (1..ben_count)
+    assign k = 'benefit_' | append: i
+    assign k_stripped = block.settings[k] | strip_html | strip
+    if k_stripped != blank
+      assign ben_has_items = true
+    endif
+  endfor
+  case block.settings.alignment
+    when 'center'
+      assign ben_align = 'center'
+    when 'right'
+      assign ben_align = 'flex-end'
+    else
+      assign ben_align = 'flex-start'
+  endcase
+  assign ben_card_bg = 'transparent'
+  if block.settings.background == 'color'
+    assign ben_card_bg = block.settings.bg_color
+  elsif block.settings.background == 'gradient'
+    assign ben_card_bg = block.settings.bg_gradient
+  endif
+  comment
+    Radius and paddings exist only for the card look — without a background
+    or border they are hidden in the editor AND skipped here, so stored
+    values can't push a transparent block out of alignment.
+  endcomment
+  assign ben_has_card = false
+  if block.settings.background != 'none' or block.settings.border != 'none'
+    assign ben_has_card = true
+  endif
+  assign ben_tagline = block.settings.tagline | strip_html | strip
+  comment
+    Text size Auto inherits the ambient Details-group size — no font-size
+    is emitted; Custom pins one (CON-3363).
+  endcomment
+  assign ben_font_css = ''
+  if block.settings.text_size_mode == 'custom'
+    assign ben_font_css = 'font-size: ' | append: block.settings.text_size | append: 'px;'
+  endif
+-%}
+{% style %}
+  .Vtls-{{ block.id }}.PgBenefits { display: flex; flex-direction: column; gap: {{ block.settings.space_under_header }}px; align-items: {{ ben_align }}; background: {{ ben_card_bg }}; {% if ben_has_card %}border-radius: {{ block.settings.radius }}px; padding: {{ block.settings.padding_vertical }}px {{ block.settings.padding_horizontal }}px; {% endif %}margin: {{ block.settings.margin_top_mobile }}px 0 {{ block.settings.margin_bottom_mobile }}px; {% if block.settings.border != 'none' %}border: {{ block.settings.border_thickness }}px {{ block.settings.border }} {{ block.settings.border_color }};{% endif %} }
+  @media (min-width: 750px) { .Vtls-{{ block.id }}.PgBenefits { margin: {{ block.settings.margin_top }}px 0 {{ block.settings.margin_bottom }}px; } }
+  .Vtls-{{ block.id }} .PgBenefits__Tagline { align-self: stretch; text-align: {{ block.settings.alignment }}; {{ ben_font_css }} color: {{ block.settings.text_color }}; line-height: 1.5; }
+  .Vtls-{{ block.id }} .PgBenefits__Tagline a { color: inherit; }
+  .Vtls-{{ block.id }} .PgBenefits__List { display: flex; flex-direction: column; gap: {{ block.settings.space_between }}px; align-items: {{ ben_align }}; }
+  {%- comment -%} Font size on the ROW so the em-sized icon tracks it too. {%- endcomment -%}
+  .Vtls-{{ block.id }} .PgBenefits__Row { display: flex; align-items: flex-start; gap: 8px; justify-content: {{ ben_align }}; {{ ben_font_css }} }
+  {%- comment -%} 1.5em tracks the row's effective font-size in BOTH text-size modes. {%- endcomment -%}
+  .Vtls-{{ block.id }} .PgBenefits__Icon { flex: 0 0 auto; display: inline-flex; align-items: center; height: 1.5em; color: {{ block.settings.icon_color }}; }
+  .Vtls-{{ block.id }} .PgBenefits__Icon .PgI { width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; }
+  .Vtls-{{ block.id }} .PgBenefits__Text { color: {{ block.settings.text_color }}; line-height: 1.5; }
+  .Vtls-{{ block.id }} .PgBenefits__Text a { color: inherit; }
+{% endstyle %}
+{%- comment -%} A tagline alone is real content — don't require benefit lines for it. {%- endcomment -%}
+{%- if ben_has_items or ben_tagline != blank -%}
+  <div class="Vtls-{{ block.id }} PgBenefits" {{ block.shopify_attributes }}>
+    {%- if ben_tagline != blank -%}<div class="PgBenefits__Tagline">{{ block.settings.tagline }}</div>{%- endif -%}
+    {%- if ben_has_items -%}
+    <div class="PgBenefits__List">
+      {%- for i in (1..ben_count) -%}
+        {%- assign bk = 'benefit_' | append: i -%}
+        {%- assign btext = block.settings[bk] -%}
+        {%- assign btext_stripped = btext | strip_html | strip -%}
+        {%- if btext_stripped != blank -%}
+          <div class="PgBenefits__Row">
+            {%- if block.settings.icon != 'none' -%}<span class="PgBenefits__Icon"><span class="PgI PgI--{{ block.settings.icon }}" aria-hidden="true"></span></span>{%- endif -%}
+            <span class="PgBenefits__Text">{{ btext }}</span>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    {%- endif -%}
+  </div>
+{%- else -%}
+  {%- comment -%} All lines cleared: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Benefits list",
+  "settings": [
+    {
+      "type": "select",
+      "id": "benefit_count",
+      "label": "Number of benefits",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "header",
+      "content": "Benefits"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tagline",
+      "label": "Tagline"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "benefit_1",
+      "label": "Benefit #1",
+      "default": "Describe how it brings value"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "benefit_2",
+      "label": "Benefit #2",
+      "default": "What makes your product stand out",
+      "visible_if": "{{ block.settings.benefit_count != '1' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "benefit_3",
+      "label": "Benefit #3",
+      "default": "Why customers will love it",
+      "visible_if": "{{ block.settings.benefit_count != '1' and block.settings.benefit_count != '2' }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "benefit_4",
+      "label": "Benefit #4",
+      "visible_if": "{{ block.settings.benefit_count == '4' }}",
+      "default": "Describe how it brings value"
+    },
+    {
+      "type": "header",
+      "content": "Icons & Text"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "scallop",
+          "label": "Scalloped check"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "pulsating-dot",
+          "label": "Pulsating dot"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "check-square",
+          "label": "Check square"
+        },
+        {
+          "value": "check-circle",
+          "label": "Check outline"
+        },
+        {
+          "value": "check_circle",
+          "label": "Check round"
+        }
+      ],
+      "default": "check_circle"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "text_size_mode",
+      "label": "Text size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto",
+      "info": "Auto shows template default."
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.text_size_mode == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F5F5F5",
+      "visible_if": "{{ block.settings.background == 'color' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #EEF1EA, #D8E0CE)",
+      "visible_if": "{{ block.settings.background == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Border thickness",
+      "min": 0.5,
+      "max": 4,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.background != 'none' or block.settings.border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "space_between",
+      "label": "Space between benefits",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "space_under_header",
+      "label": "Space under tagline",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.tagline != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Top - bottom padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.background != 'none' or block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Left - right padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.background != 'none' or block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Benefits list"
+    }
+  ]
+}
+{% endschema %}

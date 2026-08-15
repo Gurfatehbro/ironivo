@@ -1,0 +1,211 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- comment -%}
+  CON-3354: the H1/H2 tag select is gone — the heading is always an h2
+  (the safe-coexistence default the old setting shipped with; themes keep
+  their own h1). The text itself is now a merchant-editable inline
+  richtext defaulting to the product title dynamic source, with size /
+  color / weight / per-device margins driven from block settings.
+{%- endcomment -%}
+{%- liquid
+  # Fall back to the live product title when the setting is blank OR when
+  # the stored default is the UNRESOLVED dynamic-source literal (same
+  # hardening as the description-tabs default). The literal is built at
+  # runtime so this file's own source never contains it.
+  assign vtls_lb = '{' | append: '{'
+  assign title_content = block.settings.title
+  if title_content == blank or title_content contains vtls_lb
+    assign title_content = product.title | escape
+  endif
+-%}
+{%- comment -%}
+  Injector discoverability (same pattern as the quantity/picker
+  blocks): Vitals places widgets relative to the product title
+  via the ProductTitle document injector, whose selector list is
+  matched by priority. `product__title` on the wrapper matches the
+  high-priority `.product__title > h1` selector, and the
+  `title`-bearing class on the heading matches `h1/h2[class*="title"]`
+  — both far above the bare-heading catch-alls.
+{%- endcomment -%}
+<div class="vtls-pi__title product__title Vtls-{{ block.id }}" {{ block.shopify_attributes }}>
+  <h2 class="vtls-pi__title-text">{{ title_content }}</h2>
+</div>
+{%- comment -%}
+  KEEP THIS {% style %} BELOW THE MARKUP. `{% style %}` renders an inline
+  <style> element as a real child of the `.shopify-block` wrapper that
+  `content_for` puts around every block, so with the style tag first the
+  title is never the wrapper's first child and the `> * + *` owl below
+  would match the title itself — an 8px phantom gap on every render, with
+  no widget injected, that also outranks this block's own margin-top
+  settings (the owl carries an id, the setting rules two classes). The
+  Details group documents the same hazard: it spaces its children with a
+  flex row-gap precisely because inline <style> tags emitted by child
+  blocks would create phantom gaps under a margin owl. Emitting the style
+  tag last keeps the title the genuine first child; the owl then matches
+  only the trailing <style> (display:none, so the margin has no effect)
+  until a widget is actually injected.
+{%- endcomment -%}
+{% style %}
+  .vtls-pi__title.Vtls-{{ block.id }} {
+    margin-top: {{ block.settings.margin_top }}px;
+    margin-bottom: {{ block.settings.margin_bottom }}px;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__title-text {
+    margin: 0;
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    font-weight: {% if block.settings.title_style == 'regular' %}400{% else %}700{% endif %};
+  }
+  @media screen and (max-width: 749px) {
+    .vtls-pi__title.Vtls-{{ block.id }} {
+      margin-top: {{ block.settings.margin_top_mobile }}px;
+      margin-bottom: {{ block.settings.margin_bottom_mobile }}px;
+    }
+    .Vtls-{{ block.id }} .vtls-pi__title-text {
+      font-size: {{ block.settings.title_size_mobile }}px;
+    }
+  }
+  {%- comment -%}
+    Spacing for widgets Vitals injects next to the title (the Product
+    Reviews stars snippet is the common one). The injector always zeroes
+    the ANCHOR's margin on the side facing the snippet — inline
+    `margin-bottom: 0` when it inserts below, inline `margin-top: 0` when
+    it inserts above — so the gap can only ever live on the INJECTED
+    node: an inline style beats any rule this file can write. That is
+    also where a theme's gap comes from on a theme page (Horizon: 8px on
+    the injected node). Our section has no such rule, and its 20px stack
+    gap can't reach the node either: `content_for` wraps each block in
+    `.shopify-block`, so the snippet always lands one level below
+    `.vtls-pi__info`, either beside the heading or beside this wrapper
+    depending on which selector the ProductTitle injector matches. Cover
+    both anchors AND both placements, matching Horizon's 8px:
+      - below the title — the snippet is the TRAILING sibling, so the
+        owl's margin-top lands on the snippet itself. Correct as-is.
+      - above the title — the snippet is the LEADING sibling, so the owl
+        would target our own title, whose inline margin-top the injector
+        has just set to 0 (the margin would silently do nothing). Mirror
+        the rule with `:has(+ <title>)` so the margin-bottom lands on the
+        snippet instead.
+    Each placement therefore puts a real margin on exactly one node — the
+    injected one — so the two rules can never stack into a 16px gap, and
+    neither can override this block's own margin_top/margin_bottom
+    settings. See the comment above the tag for why this <style> element
+    has to stay below the markup.
+  {%- endcomment -%}
+  #vtls-pi-{{ section.id }} .vtls-pi__title.Vtls-{{ block.id }} > * + *,
+  #vtls-pi-{{ section.id }} .shopify-block:has(> .vtls-pi__title.Vtls-{{ block.id }}) > * + * {
+    margin-top: 8px;
+  }
+  #vtls-pi-{{ section.id }} .vtls-pi__title.Vtls-{{ block.id }} > *:has(+ .vtls-pi__title-text),
+  #vtls-pi-{{ section.id }} .shopify-block:has(> .vtls-pi__title.Vtls-{{ block.id }}) > *:has(+ .vtls-pi__title.Vtls-{{ block.id }}) {
+    margin-bottom: 8px;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Product title",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "{{ product.title }}"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size (desktop)",
+      "min": 10,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title size (mobile)",
+      "min": 10,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "title_style",
+      "label": "Title style",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product title"
+    }
+  ]
+}
+{% endschema %}

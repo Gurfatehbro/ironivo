@@ -1,0 +1,94 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- if product.selling_plan_groups.size > 0 -%}
+  {%- assign product_form_id = 'vtls-pi-form-' | append: section.id -%}
+  <fieldset class="vtls-pi__plans vtls-pi__optset" data-vtls-plans {{ block.shopify_attributes }}>
+    <legend class="vtls-pi__label">{{ block.settings.label | default: 'Purchase options' | escape }}</legend>
+    {%- comment -%}
+      Subscription-only products (requires_selling_plan) must not offer the
+      one-time choice cart add would reject - the first plan is preselected
+      instead. Scripted rows ship [hidden]; bindPlans reveals them (the
+      variant-picker pattern since VERSION-39) so no noscript <style> exists
+      for the theme editor's inert re-parse to materialize and apply.
+    {%- endcomment -%}
+    {%- unless product.requires_selling_plan -%}
+    <label class="vtls-pi__plan vtls-pi__plan--js is-selected" hidden>
+      <input type="radio" name="vtls-plan-{{ section.id }}" value="" checked data-vtls-plan-radio style="margin: 0;">
+      <span class="vtls-pi__plan-name">{{ block.settings.onetime_label | default: 'One-time purchase' | escape }}</span>
+      <span class="vtls-pi__plan-price" data-vtls-plan-price=""></span>
+    </label>
+    {%- endunless -%}
+    {%- assign vtls_plan_first = true -%}
+    {%- for group in product.selling_plan_groups -%}
+      {%- for plan in group.selling_plans -%}
+        {%- if product.requires_selling_plan and vtls_plan_first -%}
+        <label class="vtls-pi__plan vtls-pi__plan--js is-selected" hidden>
+          <input type="radio" name="vtls-plan-{{ section.id }}" value="{{ plan.id }}" checked data-vtls-plan-radio style="margin: 0;">
+        {%- else -%}
+        <label class="vtls-pi__plan vtls-pi__plan--js" hidden>
+          <input type="radio" name="vtls-plan-{{ section.id }}" value="{{ plan.id }}" data-vtls-plan-radio style="margin: 0;">
+        {%- endif -%}
+          <span class="vtls-pi__plan-name">{{ plan.name | escape }}</span>
+          <span class="vtls-pi__plan-price" data-vtls-plan-price="{{ plan.id }}"></span>
+        </label>
+        {%- assign vtls_plan_first = false -%}
+      {%- endfor -%}
+    {%- endfor -%}
+    {%- comment -%}
+      No-JS fallback: the styled radios above are inert without the runtime
+      (their vtls-plan-* selection never reaches the form and the hidden
+      selling_plan input ships disabled). Swap them for form-associated
+      selling_plan radios so a native submit carries the chosen plan — the
+      same pattern as the buy-buttons noscript variant select.
+    {%- endcomment -%}
+    <noscript>
+      {%- unless product.requires_selling_plan -%}
+      <label class="vtls-pi__plan is-selected">
+        <input type="radio" name="selling_plan" value="" form="{{ product_form_id }}" checked style="margin: 0;">
+        <span class="vtls-pi__plan-name">{{ block.settings.onetime_label | default: 'One-time purchase' | escape }}</span>
+      </label>
+      {%- endunless -%}
+      {%- assign vtls_plan_first_ns = true -%}
+      {%- for group in product.selling_plan_groups -%}
+        {%- for plan in group.selling_plans -%}
+          <label class="vtls-pi__plan{% if product.requires_selling_plan and vtls_plan_first_ns %} is-selected{% endif %}">
+            <input type="radio" name="selling_plan" value="{{ plan.id }}" form="{{ product_form_id }}"{% if product.requires_selling_plan and vtls_plan_first_ns %} checked{% endif %} style="margin: 0;">
+            <span class="vtls-pi__plan-name">{{ plan.name | escape }}</span>
+          </label>
+          {%- assign vtls_plan_first_ns = false -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    </noscript>
+  </fieldset>
+{%- else -%}
+  {%- comment -%} No selling plans: keep an editor anchor so the block stays selectable. {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Purchase options",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the product's selling plans (subscriptions). Renders nothing when the product has no selling plans."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Purchase options"
+    },
+    {
+      "type": "text",
+      "id": "onetime_label",
+      "label": "One-time purchase label",
+      "default": "One-time purchase"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Purchase options"
+    }
+  ]
+}
+{% endschema %}

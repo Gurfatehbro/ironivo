@@ -1,0 +1,309 @@
+{%- comment -%}
+  Selectors group — variant picker + quantity selector (and purchase options)
+  presented as one editor group, mirroring Horizon's product-information UX.
+
+  CON-3358: the group owns the shared selector styling (colors, radius, text
+  size, gap, margins). Two platform constraints shape this: visible_if cannot
+  reference ANOTHER block's settings, so the Dropdowns/Pills style switch
+  stays on the Variant selector block and the style-specific settings here
+  show unconditionally (their CSS only bites in the style that renders); and
+  a parent's settings are not readable from child Liquid, so everything is
+  applied as descendant CSS from this wrapper.
+{%- endcomment -%}
+{% style %}
+  {%- comment -%}
+    Appearance contract for sibling blocks: the Buy buttons block styles
+    its gift-card form and pickup text from these custom properties so
+    both match the selectors (Liquid cannot reach a NESTED sibling
+    block's settings — section.blocks only exposes top-level entries —
+    so the sharing happens in CSS). Consumers use var(..., fallback)
+    with this block's schema defaults, which also covers the case where
+    the merchant removed this block entirely.
+  {%- endcomment -%}
+  #vtls-pi-{{ section.id }} {
+    --vtls-sel-bg: {{ block.settings.background_color }};
+    --vtls-sel-border: {{ block.settings.border_color }};
+    --vtls-sel-text: {{ block.settings.text_color }};
+    --vtls-sel-label: {{ block.settings.label_color }};
+    --vtls-sel-radius: {{ block.settings.corner_radius }}px;
+    --vtls-sel-gap: {{ block.settings.gap }}px;
+    {%- if block.settings.text_size_mode == 'custom' %}
+    --vtls-sel-font-size: {{ block.settings.font_size_custom }}px;
+    {%- endif %}
+  }
+  .Vtls-{{ block.id }}.vtls-pi__selectors {
+    display: flex;
+    flex-direction: column;
+    row-gap: {{ block.settings.gap }}px;
+    margin-top: {{ block.settings.margin_top_mobile }}px;
+    margin-bottom: {{ block.settings.margin_bottom_mobile }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .Vtls-{{ block.id }}.vtls-pi__selectors {
+      margin-top: {{ block.settings.margin_top }}px;
+      margin-bottom: {{ block.settings.margin_bottom }}px;
+    }
+  }
+  {%- comment -%}
+    content_for wraps each child block in an anonymous div, so the flex
+    children are wrappers. An empty wrapper (single-variant product renders
+    no picker) must not consume a gap slot — and Dawn-family themes ship a
+    div:empty rule, so belt and braces.
+  {%- endcomment -%}
+  .Vtls-{{ block.id }}.vtls-pi__selectors > *:empty,
+  .Vtls-{{ block.id }}.vtls-pi__selectors > *:has(> .vtls-pi__empty-anchor) { display: none; }
+  {%- comment -%}
+    The same row-gap spaces the option rows INSIDE the variant picker, so
+    "between all selectors" reads uniformly; the optset margin is dropped
+    so the configured gap is exact.
+  {%- endcomment -%}
+  .Vtls-{{ block.id }} .vtls-pi__picker {
+    display: flex;
+    flex-direction: column;
+    row-gap: {{ block.settings.gap }}px;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__optset { margin: 0; }
+  .Vtls-{{ block.id }} .vtls-pi__select,
+  .Vtls-{{ block.id }} .vtls-pi__pill,
+  .Vtls-{{ block.id }} .vtls-pi__qty {
+    border-color: {{ block.settings.border_color }};
+    color: {{ block.settings.text_color }};
+    border-radius: {{ block.settings.corner_radius }}px;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__pill,
+  .Vtls-{{ block.id }} .vtls-pi__qty {
+    background: {{ block.settings.background_color }};
+  }
+  {%- comment -%}
+    The dropdown keeps its chevron background-image (native arrow removed),
+    so set only background-COLOR here and recolor the chevron to the Text
+    color setting; a background: shorthand would wipe the chevron out.
+  {%- endcomment -%}
+  .Vtls-{{ block.id }} .vtls-pi__select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: {{ block.settings.background_color }};
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='{{ block.settings.text_color | replace: '#', '%23' }}' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+  {%- comment -%}
+    Auto text size = inherit the Details group's font-size for every text
+    in the group (labels, dropdowns, pills, quantity). The base :where()
+    rules use em factors (label 0.85em, pill 0.9em, qty button 1.1em);
+    these two-class rules neutralize them so Auto matches Details exactly.
+  {%- endcomment -%}
+  .Vtls-{{ block.id }} .vtls-pi__label,
+  .Vtls-{{ block.id }} .vtls-pi__select,
+  .Vtls-{{ block.id }} .vtls-pi__pill,
+  .Vtls-{{ block.id }} .vtls-pi__qty input {
+    font-size: inherit;
+  }
+  {%- comment -%} The +/- glyphs are fixed 18px by design — no text-size
+      setting (Auto inherit or Custom) may resize them. {%- endcomment -%}
+  .Vtls-{{ block.id }} .vtls-pi__qty button {
+    font-size: 18px;
+  }
+  {%- comment -%}
+    The quantity box must scale with the group text size like the selects
+    do. The select's height = font-size + 2 x 0.9rem padding; give the
+    input (whose font follows the group size) the same vertical padding so
+    it drives the box height, and let the fixed-glyph buttons stretch.
+  {%- endcomment -%}
+  .Vtls-{{ block.id }} .vtls-pi__qty {
+    align-items: stretch;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__qty input {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__qty button {
+    height: auto;
+    width: 2.4em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  {%- comment -%}
+    Themes paint bare inputs/buttons white (class-less element rules beat
+    the base :where() transparency) — keep the quantity's inner controls
+    transparent so the configured group background shows through.
+  {%- endcomment -%}
+  .Vtls-{{ block.id }} .vtls-pi__qty button,
+  .Vtls-{{ block.id }} .vtls-pi__qty input {
+    background: transparent;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__label {
+    color: {{ block.settings.label_color }};
+    opacity: 1;
+  }
+  {%- if block.settings.text_size_mode == 'custom' %}
+  .Vtls-{{ block.id }} .vtls-pi__label,
+  .Vtls-{{ block.id }} .vtls-pi__select,
+  .Vtls-{{ block.id }} .vtls-pi__pill,
+  .Vtls-{{ block.id }} .vtls-pi__qty input {
+    font-size: {{ block.settings.font_size_custom }}px;
+  }
+  {%- endif %}
+  .Vtls-{{ block.id }} .vtls-pi__select:hover,
+  .Vtls-{{ block.id }} .vtls-pi__pill:not(.is-unavailable):hover {
+    opacity: 0.8;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__qty button:hover,
+  .Vtls-{{ block.id }} .vtls-pi__qty button:active {
+    opacity: 0.6;
+  }
+{% endstyle %}
+<div class="Vtls-{{ block.id }} vtls-pi__selectors" {{ block.shopify_attributes }}>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Selectors",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#d6d6d6"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#222222"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "text_size_mode",
+      "label": "Text size",
+      "info": "Auto shows template default.",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "font_size_custom",
+      "label": "Text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.text_size_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Space between selectors",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_vtls-variant-picker"
+    },
+    {
+      "type": "_vtls-quantity-selector"
+    },
+    {
+      "type": "_vtls-buying-options"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Selectors",
+      "blocks": [
+        {
+          "type": "_vtls-variant-picker"
+        },
+        {
+          "type": "_vtls-quantity-selector"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

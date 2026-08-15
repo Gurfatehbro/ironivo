@@ -1,0 +1,271 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- comment -%}
+  CON-3356 price settings: size applies to every price in the row (final +
+  crossed); style weights only the final price. Badge text is hard-coded
+  12px and the tax/shipping + instalments lines 14px per the spec, so the
+  size slider deliberately does not reach them. Price color applies to the
+  final and crossed prices and to the instalments text (the Shop Pay logo
+  keeps its brand fill); the crossed price keeps 0.7 opacity (overrides
+  the section's 0.6 base). The sale badge label stays the theme translation
+  with a 'Sale' fallback — no text input.
+{%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign d_sale = 'products.product.on_sale' | t
+  assign vtls_probe = d_sale | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_sale = 'Sale'
+  endif
+  assign d_ship_html = 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url
+  assign vtls_probe = d_ship_html | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_ship_html = ''
+  endif
+  # Dawn-family locales expose include_taxes; older themes taxes_included.
+  assign d_tax = 'products.product.include_taxes' | t
+  assign vtls_probe = d_tax | downcase
+  if vtls_probe contains 'translation missing'
+    assign d_tax = 'products.product.taxes_included' | t
+    assign vtls_probe = d_tax | downcase
+    if vtls_probe contains 'translation missing'
+      assign d_tax = 'Tax included.'
+    endif
+  endif
+-%}
+{% style %}
+  .Vtls-{{ block.id }} {
+    margin-top: {{ block.settings.margin_top }}px;
+    margin-bottom: {{ block.settings.margin_bottom }}px;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__price,
+  .Vtls-{{ block.id }} .vtls-pi__price-compare {
+    font-size: {{ block.settings.price_size }}px;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__price {
+    font-weight: {% if block.settings.price_style == 'bold' %}700{% else %}400{% endif %};
+    color: {{ block.settings.price_color }};
+  }
+  .Vtls-{{ block.id }} .vtls-pi__price-compare {
+    color: {{ block.settings.price_color }};
+    opacity: 0.7;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__badge-sale {
+    font-size: 12px;
+    padding: 0 8px;
+    /* The price row baseline-aligns its items (prices read best that
+       way); baseline drops the padded badge low, so center it alone. */
+    align-self: center;
+    background: {{ block.settings.sale_badge_background }};
+    color: {{ block.settings.sale_badge_text }};
+    border-radius: {{ block.settings.sale_badge_corner_radius }}px;
+  }
+  .Vtls-{{ block.id }} .vtls-pi__tax-note,
+  .Vtls-{{ block.id }} .vtls-exclude-atc-injector {
+    font-size: 14px;
+  }
+  .Vtls-{{ block.id }} .vtls-exclude-atc-injector {
+    /* Instalments text follows Price color by inheritance into the
+       shopify-payment-terms element; the Shop Pay logo is a fixed-fill
+       brand asset inside it, so it is naturally unaffected. */
+    color: {{ block.settings.price_color }};
+  }
+  @media screen and (max-width: 749px) {
+    .Vtls-{{ block.id }} {
+      margin-top: {{ block.settings.margin_top_mobile }}px;
+      margin-bottom: {{ block.settings.margin_bottom_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="Vtls-{{ block.id }}" {{ block.shopify_attributes }}>
+  <div class="vtls-pi__price-row" data-vtls-price-row role="status">
+    <span class="vtls-pi__price" data-vtls-price>{{ current_variant.price | money }}</span>
+    <s class="vtls-pi__price-compare" data-vtls-compare {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>
+      {%- if current_variant.compare_at_price -%}{{ current_variant.compare_at_price | money }}{%- endif -%}
+    </s>
+    {%- if block.settings.show_sale_badge -%}
+      {%- liquid
+        assign sale_label = d_sale
+      -%}
+      <span class="vtls-pi__badge-sale" data-vtls-sale-badge {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>{{ sale_label | escape }}</span>
+    {%- endif -%}
+  </div>
+  {%- liquid
+    assign tax_label = d_tax
+  -%}
+  {%- comment -%}
+    Dawn parity: tax note and shipping-policy link are independent — both
+    render (in one caption line) when both apply.
+  {%- endcomment -%}
+  {%- if block.settings.show_tax_note -%}
+    {%- if cart.taxes_included or shop.shipping_policy.body != blank -%}
+      <div class="vtls-pi__tax-note">
+        {%- if cart.taxes_included -%}{{ tax_label | escape }}{%- endif -%}
+        {%- if cart.taxes_included and shop.shipping_policy.body != blank %} {% endif -%}
+        {%- if shop.shipping_policy.body != blank -%}
+          {%- if d_ship_html != '' -%}{{ d_ship_html }}{%- else -%}<a href="{{ shop.shipping_policy.url }}">Shipping calculated at checkout.</a>{%- endif -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+  {%- if block.settings.show_payment_terms -%}
+    {%- comment -%}
+      This mini-form renders BEFORE the buy form in the DOM, so without
+      guards the Vitals runtime's generic AtcForm document injector
+      (form[action*="/cart/add"], first match wins) would pick it as THE
+      product form — and the inside-context [name="add"] button lookup
+      would then find nothing, breaking Sticky ATC and every ATC-driven
+      Vitals module. Three belt-and-suspenders guards: the id contains
+      "product-form-installment" and the wrapper carries
+      vtls-exclude-atc-injector (both matching the injector's own
+      :not() exclusions), and the explicit `class:` param strips
+      Shopify's default `shopify-product-form` class — verified AtcForm
+      selectors without the :not() exclusions (`.shopify-product-form`)
+      matched this mini-form as the buy form and pulled every
+      form-anchored widget under the title (Aug 2026 incident).
+    {%- endcomment -%}
+    {%- assign installment_form_id = 'vtls-pi-product-form-installment-' | append: section.id -%}
+    <div class="vtls-exclude-atc-injector">
+      {%- form 'product', product, id: installment_form_id, class: 'vtls-pi__installment-form' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-vtls-installment-id>
+        {{ form | payment_terms }}
+      {%- endform -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Price",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "label": "Price size",
+      "min": 10,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price color",
+      "default": "#222222"
+    },
+    {
+      "type": "select",
+      "id": "price_style",
+      "label": "Price style",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "sale_badge_background",
+      "label": "Sale badge background",
+      "default": "#e51c00",
+      "visible_if": "{{ block.settings.show_sale_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "sale_badge_text",
+      "label": "Sale badge text",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.show_sale_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "sale_badge_corner_radius",
+      "label": "Sale badge corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.show_sale_badge }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tax_note",
+      "label": "Show tax / shipping info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_terms",
+      "label": "Show instalments (Shop Pay)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom margin (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Price"
+    }
+  ]
+}
+{% endschema %}

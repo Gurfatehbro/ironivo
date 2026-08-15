@@ -1,0 +1,29 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- if block.settings.custom_liquid != blank -%}
+  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+{%- else -%}
+  {%- comment -%}
+    Nothing configured: emit the shared editor anchor rather than an empty div, so
+    the block stays selectable AND the parent's gap-collapse rule can hide its
+    content_for wrapper instead of leaving a blank row-gap slot.
+  {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Custom Liquid",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "Custom Liquid"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Liquid"
+    }
+  ]
+}
+{% endschema %}

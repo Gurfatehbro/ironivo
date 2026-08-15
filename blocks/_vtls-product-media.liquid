@@ -1,0 +1,350 @@
+{%- comment -%} Vitals Product Information block (carved from the v9 single-file section). {%- endcomment -%}
+{%- liquid
+  assign enable_zoom = false
+  if block.settings.zoom and product.media.size > 0
+    assign enable_zoom = true
+  endif
+  assign media_width_pct = 50
+  if block.settings.media_width == 'small'
+    assign media_width_pct = 42
+  elsif block.settings.media_width == 'large'
+    assign media_width_pct = 58
+  endif
+  assign thumb_radius = block.settings.media_radius | at_most: 10
+
+  # Media behavior settings copied from Horizon's product media gallery
+  # (CON-3350): the aspect-ratio option VALUES are the CSS ratios Horizon
+  # ships ('adapt' | '1' | '1/1.25' | '2/1').
+  assign media_ratio = block.settings.media_aspect_ratio | default: 'adapt'
+  assign current_featured = product.selected_or_first_available_variant.featured_media
+  assign active_media_id = product.media.first.id
+  if current_featured
+    assign active_media_id = current_featured.id
+  endif
+  if block.settings.hide_variants
+    # Horizon's rule: an image attached to ANY variant only shows while it is
+    # the selected variant's featured media; unattached media always shows.
+    assign attached_srcs = product.images | where: 'attached_to_variant?', true | map: 'src'
+  endif
+
+  # Keep the responsive hint honest: the desktop column is 42/50/58% wide
+  # depending on the Media width setting, not a hardcoded half.
+  assign sizes_attr = '(min-width: 750px) ' | append: media_width_pct | append: 'vw, 100vw'
+-%}
+{% style %}
+  /* Media layout settings live on this block (moved from the section's General
+     settings — CON-3344). This style renders after the section's, so its
+     equal-specificity rules override the section's static defaults. */
+  #vtls-pi-{{ section.id }} .vtls-pi__media-item { border-radius: {{ block.settings.media_radius }}px; }
+  #vtls-pi-{{ section.id }} .vtls-pi__thumb,
+  #vtls-pi-{{ section.id }} .vtls-pi__zoom-thumb { border-radius: {{ thumb_radius }}px; }
+  @media screen and (min-width: 750px) {
+    {%- comment -%}
+      The media side follows the block order (drag to flip — CON-3350
+      removed the position setting). Same :has() selectors as the section's
+      defaults so this width override wins purely by source order, and the
+      configured width always lands on whichever TRACK the media column
+      occupies (a plain item-order swap would drop it into the 1fr track).
+    {%- endcomment -%}
+    #vtls-pi-{{ section.id }} .vtls-pi__grid:has(> :first-child .vtls-pi__media-col) {
+      grid-template-columns: {{ media_width_pct }}% minmax(0, 1fr);
+    }
+    #vtls-pi-{{ section.id }} .vtls-pi__grid:has(> :not(:first-child) .vtls-pi__media-col) {
+      grid-template-columns: minmax(0, 1fr) {{ media_width_pct }}%;
+    }
+  }
+  {%- if media_ratio != 'adapt' %}
+  /* Fixed aspect ratio: the box owns the ratio and the media covers it
+     (Horizon's media-fit-cover behavior). */
+  #vtls-pi-{{ section.id }} .vtls-pi__media-item { aspect-ratio: {{ media_ratio }}; }
+  #vtls-pi-{{ section.id }} .vtls-pi__media-item > img,
+  #vtls-pi-{{ section.id }} .vtls-pi__media-item > video,
+  #vtls-pi-{{ section.id }} .vtls-pi__media-item > iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  {%- elsif block.settings.constrain_media %}
+  /* Auto ratio constrained to screen height, desktop only (Horizon disables
+     the constraint on mobile). Horizon's trick, copied: shrink the BOX to
+     the media's own ratio at the constrained height instead of letterboxing
+     with object-fit — the image always fills its box edge-to-edge, so the
+     corner radius keeps hugging the visible media (the ticket's concern). */
+  @media screen and (min-width: 750px) {
+    #vtls-pi-{{ section.id }} .vtls-pi__media-item {
+      width: min(100%, calc(var(--vtls-constrained-h, calc(100vh - 4rem)) * var(--vtls-media-ratio, 1)));
+      margin-inline: auto;
+    }
+  }
+  {%- endif %}
+{% endstyle %}
+{%- if product.media.size > 0 -%}
+  <div class="vtls-pi__media-col" {{ block.shopify_attributes }}{% if block.settings.hide_variants %} data-vtls-hide-variants{% endif %}>
+    <div class="vtls-pi__media-stage">
+      <div class="vtls-pi__media-list" data-vtls-media-list>
+        {%- for media in product.media -%}
+          {%- liquid
+            assign is_attached = false
+            if block.settings.hide_variants and attached_srcs contains media.src
+              assign is_attached = true
+            endif
+          -%}
+          <figure
+            class="vtls-pi__media-item{% if media.id == active_media_id %} is-active{% endif %}"
+            data-vtls-media-id="{{ media.id }}"
+            style="--vtls-media-ratio: {{ media.preview_image.aspect_ratio | default: 1 }};"
+            {% if is_attached %}data-vtls-attached{% if media.id != active_media_id %} hidden{% endif %}{% endif %}
+          >
+            {%- liquid
+              # Prioritize the media that actually renders as the hero: the
+              # active (selected-variant featured) one, not forloop.first —
+              # they differ whenever a variant selection changes the hero.
+              assign media_loading = 'lazy'
+              assign media_fetchpriority = 'auto'
+              if media.id == active_media_id
+                assign media_loading = 'eager'
+                assign media_fetchpriority = 'high'
+              endif
+            -%}
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- comment -%}
+                  Dense widths ladder (Horizon-style): finer steps let each
+                  device pick the smallest sufficient candidate, so gallery
+                  fetches (and the background warming sweep) finish faster.
+                {%- endcomment -%}
+                {{ media | image_url: width: 1500 | image_tag:
+                  widths: '350, 500, 750, 1000, 1250, 1500',
+                  sizes: sizes_attr,
+                  loading: media_loading,
+                  decoding: 'async',
+                  fetchpriority: media_fetchpriority
+                }}
+                {%- if enable_zoom -%}
+                  <button
+                    type="button"
+                    class="vtls-pi__zoom-open"
+                    data-vtls-zoom-open="{{ forloop.index0 }}"
+                    aria-label="Zoom media {{ forloop.index }}"
+                  ></button>
+                {%- endif -%}
+              {%- when 'video' -%}
+                {{ media | video_tag: controls: true, muted: true }}
+              {%- when 'external_video' -%}
+                {{ media | external_video_tag }}
+              {%- when 'model' -%}
+                {{ media | model_viewer_tag }}
+            {%- endcase -%}
+          </figure>
+        {%- endfor -%}
+      </div>
+    {%- if product.media.size > 1 -%}
+      {%- comment -%}
+        Arrows live on the stage, NOT inside the list: the list is a real
+        scroll container on mobile (swipe carousel), and absolutely
+        positioned children of a scroller travel with the scrolled canvas.
+      {%- endcomment -%}
+      <button type="button" class="vtls-pi__media-nav vtls-pi__media-nav--prev" data-vtls-media-prev aria-label="Previous media">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true" focusable="false">
+          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button type="button" class="vtls-pi__media-nav vtls-pi__media-nav--next" data-vtls-media-next aria-label="Next media">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true" focusable="false">
+          <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    {%- endif -%}
+    </div>
+    {%- if product.media.size > 1 -%}
+      <ul class="vtls-pi__thumbs" data-vtls-thumbs>
+        {%- for media in product.media -%}
+          {%- liquid
+            assign is_attached = false
+            if block.settings.hide_variants and attached_srcs contains media.src
+              assign is_attached = true
+            endif
+          -%}
+          <li {% if is_attached %}data-vtls-attached data-vtls-media-id="{{ media.id }}"{% if media.id != active_media_id %} hidden{% endif %}{% endif %}>
+            <button
+              type="button"
+              class="vtls-pi__thumb{% if media.id == active_media_id %} is-active{% endif %}"
+              data-vtls-thumb="{{ media.id }}"
+              aria-label="Show media {{ forloop.index }}"
+            >
+              <img src="{{ media.preview_image | image_url: width: 128 }}" alt="" loading="lazy" width="64" height="64">
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+    {%- if enable_zoom -%}
+      {%- comment -%}
+        Horizon-style zoom lightbox: a fullscreen <dialog> holding every media
+        at high resolution. Markup only — CSS + runtime live in the section
+        file, all vtls- namespaced (no collision with Dawn's product-modal /
+        media-gallery custom elements). Everything inside is lazy (images,
+        video preload=none, lazy iframes), so a closed dialog costs nothing.
+      {%- endcomment -%}
+      <dialog class="vtls-pi__zoom-dialog" data-vtls-zoom-dialog aria-label="Product media gallery">
+        <button type="button" class="vtls-pi__zoom-close" data-vtls-zoom-close aria-label="Close">
+          <svg viewBox="0 0 18 18" width="18" height="18" fill="none" aria-hidden="true" focusable="false">
+            <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        {%- if product.media.size > 1 -%}
+          <div class="vtls-pi__zoom-thumbs-rail">
+            <ul class="vtls-pi__zoom-thumbs" data-vtls-zoom-thumbs>
+              {%- for media in product.media -%}
+                {%- liquid
+                  assign is_attached = false
+                  if block.settings.hide_variants and attached_srcs contains media.src
+                    assign is_attached = true
+                  endif
+                -%}
+                <li {% if is_attached %}data-vtls-attached data-vtls-media-id="{{ media.id }}"{% if media.id != active_media_id %} hidden{% endif %}{% endif %}>
+                  <button
+                    type="button"
+                    class="vtls-pi__zoom-thumb{% if media.id == active_media_id %} is-active{% endif %}"
+                    data-vtls-zoom-thumb="{{ forloop.index0 }}"
+                    aria-label="Show media {{ forloop.index }}"
+                    aria-current="{% if media.id == active_media_id %}true{% else %}false{% endif %}"
+                  >
+                    <img src="{{ media.preview_image | image_url: width: 128 }}" alt="" loading="lazy" width="56" height="56">
+                  </button>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+        <ul class="vtls-pi__zoom-list" data-vtls-zoom-list>
+          {%- for media in product.media -%}
+            {%- liquid
+              assign is_attached = false
+              if block.settings.hide_variants and attached_srcs contains media.src
+                assign is_attached = true
+              endif
+            -%}
+            <li
+              class="vtls-pi__zoom-item vtls-pi__zoom-item--{{ media.media_type }}"
+              data-vtls-zoom-item="{{ forloop.index0 }}"
+              {%- if media.media_type == 'image' %} data-vtls-zoom-closer{% endif -%}
+              {% if is_attached %} data-vtls-attached data-vtls-media-id="{{ media.id }}"{% if media.id != active_media_id %} hidden{% endif %}{% endif %}
+            >
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  <div class="vtls-pi__zoom-pan" data-vtls-zoom-pan>
+                    {{ media | image_url: width: 2048 | image_tag:
+                      widths: '800, 1200, 1600, 2048',
+                      sizes: '100vw',
+                      loading: 'lazy'
+                    }}
+                  </div>
+                {%- when 'video' -%}
+                  {{ media | video_tag: controls: true, preload: 'none', playsinline: true }}
+                {%- when 'external_video' -%}
+                  {{ media | external_video_tag: loading: 'lazy' }}
+                {%- when 'model' -%}
+                  {{ media.preview_image | image_url: width: 1500 | image_tag: loading: 'lazy' }}
+              {%- endcase -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </dialog>
+    {%- endif -%}
+  </div>
+{%- else -%}
+  {%- comment -%}
+    No media (gift cards etc.): keep an editor anchor so the block stays
+    selectable. Deliberately NOT the media-col class - an invisible anchor
+    must not trigger the grid's two-column :has(.vtls-pi__media-col) rules.
+  {%- endcomment -%}
+  <div class="vtls-pi__empty-anchor" hidden aria-hidden="true" {{ block.shopify_attributes }}></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product media",
+  "settings": [
+    {
+      "type": "select",
+      "id": "media_width",
+      "label": "Media width (desktop)",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "range",
+      "id": "media_radius",
+      "label": "Media corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "media_aspect_ratio",
+      "label": "Media aspect ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Auto"
+        },
+        {
+          "value": "1",
+          "label": "Square"
+        },
+        {
+          "value": "1/1.25",
+          "label": "Portrait"
+        },
+        {
+          "value": "2/1",
+          "label": "Landscape"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "checkbox",
+      "id": "constrain_media",
+      "label": "Constrain media to screen height",
+      "default": true,
+      "visible_if": "{{ block.settings.media_aspect_ratio == 'adapt' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_variants",
+      "label": "Hide unselected variant media",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "zoom",
+      "label": "Enable zoom",
+      "info": "Clicking a product image opens it in a full-screen zoom view.",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product media"
+    }
+  ]
+}
+{% endschema %}

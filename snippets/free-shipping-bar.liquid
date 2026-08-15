@@ -1,0 +1,28 @@
+{% comment %}
+  Renders a dynamic Free Shipping Progress Bar
+  Accepts:
+  - threshold: {Number} Amount in cents (default: 5000 = $50.00)
+{% endcomment %}
+
+{%- liquid
+  assign free_shipping_threshold = 5000
+  assign cart_total = cart.total_price
+  assign remaining_amount = free_shipping_threshold | minus: cart_total
+  assign progress_percent = cart_total | times: 100.0 | divided_by: free_shipping_threshold | at_most: 100
+-%}
+
+<div class="free-shipping-bar{% if cart_total >= free_shipping_threshold %} free-shipping-bar--unlocked{% endif %}" data-threshold="{{ free_shipping_threshold }}">
+  <div class="free-shipping-bar__message">
+    <span class="free-shipping-bar__icon">🚚</span>
+    <span class="free-shipping-bar__text">
+      {%- if cart_total >= free_shipping_threshold -%}
+        🎉 <strong>Congratulations!</strong> You unlocked <strong>FREE Shipping</strong>!
+      {%- else -%}
+        Add <strong>{{ remaining_amount | money }}</strong> more to unlock <strong>FREE Shipping</strong>!
+      {%- endif -%}
+    </span>
+  </div>
+  <div class="free-shipping-bar__track">
+    <div class="free-shipping-bar__progress" style="width: {{ progress_percent }}%;"></div>
+  </div>
+</div>
