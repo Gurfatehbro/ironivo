@@ -1,1 +1,139 @@
-{"sections":{"vitals_8e910774_CnEQtd":{"type":"vitals-8e910774","blocks":{"caption_44wa84":{"type":"caption","settings":{"caption":"","caption_size":"16","caption_weight":"400","caption_color":"#222222","caption_alternative_font":false,"caption_font":"sans_serif_n4"}},"heading_NLceN3":{"type":"heading","settings":{"heading":"Fuel Your Active Lifestyle","heading_size":"32","heading_style":"regular","heading_color":"#222222","heading_alternative_font":false,"heading_font":"sans_serif_n4"}},"text_9kJb7i":{"type":"text","settings":{"description":"<p>Shop gear and accessories designed to power your workouts, recovery, and everyday performance.<\/p>","description_size":"16","description_color":"#222222","description_alternative_font":false,"description_font":"sans_serif_n4"}},"buttons_bBJyRG":{"type":"buttons","settings":{"primary_button_label":"SHOP NOW >","primary_button_link":"shopify:\/\/collections\/all","primary_button_style":"solid","primary_text_color":"#ffffff","primary_background_color":"#222222","primary_border_color":"#222222","primary_button_corner":0,"primary_new_tab":false,"secondary_button_label":"","secondary_button_link":"","secondary_button_style":"link","secondary_text_color":"#222222","secondary_background_color":"","secondary_border_color":"","secondary_button_corner":0,"secondary_new_tab":false}}},"block_order":["caption_44wa84","heading_NLceN3","text_9kJb7i","buttons_bBJyRG"],"name":"🧡 Vitals: Text Box & Background","settings":{"image":"shopify:\/\/shop_images\/ai-banner-aboutUsImage-6a80a122da027.webp","overlay_opacity":22,"overlay_color":"#222222","desktop_banner_height":"large","mobile_banner_height":"medium","section_background":"","add_parallax":false,"text_box_height":"default","text_box_background":"#ffffff","text_box_opacity":90,"text_box_border_radius":0,"desktop_content_position":"center-center","mobile_content_position":"center","layout_type":"desktop","section_width":100,"section_width_mobile":100,"section_max_width":"","padding_top":0,"padding_bottom":0,"margin_top":0,"margin_bottom":0,"padding_top_mobile":0,"padding_bottom_mobile":0,"margin_top_mobile":0,"margin_bottom_mobile":0}},"vitals_ce7789ea_RaHGkC":{"type":"vitals-ce7789ea","blocks":{"icon_6grgtL":{"type":"icon","settings":{"icon_type":"icon","icon":"shield_alt","font_awesome":"","icon_title":"Secure Checkout","icon_description":"Safe and easy payments every time"}},"icon_EiFWaE":{"type":"icon","settings":{"icon_type":"icon","icon":"shipping_fast","font_awesome":"","icon_title":"Fast Shipping","icon_description":"Get your order delivered quickly"}},"icon_dcGyxT":{"type":"icon","settings":{"icon_type":"icon","icon":"comments","font_awesome":"","icon_title":"Customer Support","icon_description":"Friendly help whenever you need it"}},"icon_yqERPn":{"type":"icon","settings":{"icon_type":"icon","icon":"award","font_awesome":"","icon_title":"Easy Returns","icon_description":"Shop with confidence, hassle-free"}}},"block_order":["icon_6grgtL","icon_EiFWaE","icon_dcGyxT","icon_yqERPn"],"name":"🧡 Vitals: Value Icons","settings":{"icon_color":"#222222","icon_size":24,"icon_title_size":"16","icon_title_color":"#222222","icon_description_size":"14","icon_description_color":"#222222","icons_per_row_desktop":4,"icons_mobile_layout":"2","space_between_icons":24,"space_between_rows":64,"space_between_rows_mobile":40,"heading":"","heading_size":"32","heading_style":"regular","heading_alignment":"center","heading_color":"#222222","section_background_style":"color","section_background":"#f5f5f5","section_background_gradient":"linear-gradient(to right, #fed951, #ff46c7)","section_background_animation":false,"overlay_color":"#222222","overlay_opacity":0,"section_width":70,"section_max_width":"","spacing_type":"desktop","padding_top":40,"padding_bottom":40,"margin_top":0,"margin_bottom":0,"padding_top_mobile":20,"padding_bottom_mobile":20,"margin_top_mobile":0,"margin_bottom_mobile":0}},"vitals_a70464d0_CpyexC":{"type":"vitals-a70464d0","name":"🧡 Vitals: Decorative Borders","settings":{"border_style":"triangle","border_color":"#f5f5f5","line_color":"#222222","circles_color":"#222222","enable_wavy_animation":false,"enable_dynamic_waves_animation":false,"enable_animation":true,"enable_outline_animation":false,"enable_small_waves_animation":false,"enable_circles_animation":false,"enable_zig_zag_animation":false,"animation_speed":"40","circles_animation_speed":"40","zig_zag_animation_speed":"40","outline_animation_speed":"40","border_position":"below","layout_type":"desktop","section_width":100,"section_width_mobile":100,"section_max_width":"","margin_top":0,"margin_bottom":0,"margin_top_mobile":0,"margin_bottom_mobile":0}},"vitals_d9d73599_djGjeH":{"type":"vitals-d9d73599","blocks":{"heading_JiLkaU":{"type":"heading","settings":{"heading":"New Arrivals","heading_size":"32","heading_style":"regular","description":"","description_size":"16","text_color":"#222222"}},"collection_PUReKm":{"type":"collection","settings":{"collection":"new-arrivals","tab_title":"","products_limit":4}},"button_Q7j7zM":{"type":"button","settings":{"primary_button_label":"See more in this collection","primary_button_link":"shopify:\/\/collections\/new-arrivals","primary_button_style":"solid","primary_text_color":"#ffffff","primary_background_color":"#222222","primary_border_color":"#222222","button_alignment":"center","primary_button_corner":0,"primary_new_tab":false}}},"block_order":["heading_JiLkaU","collection_PUReKm","button_Q7j7zM"],"name":"🧡 Vitals: Featured Collection Grid","settings":{"image_aspect_ratio":"square","cards_radius":0,"show_vendor":false,"show_product_rating":true,"product_name_vendor_size":"14","product_card_text_color":"#222222","price_size":"14","price_color":"#222222","product_card_discounted_price_color":"#222222","product_text_alignment":"left","products_per_row_desktop":"4","products_per_row_mobile":"2","hide_collections":false,"product_card_gap":24,"text_alignment":"center","tabs_color":"#222222","tabs_size":"16","section_background_style":"color","section_background":"","overlay_color":"#222222","overlay_opacity":0,"section_width":100,"section_max_width":"1130","spacing_type":"desktop","padding_top":60,"padding_bottom":70,"margin_top":0,"margin_bottom":0,"padding_top_mobile":40,"padding_bottom_mobile":40,"margin_top_mobile":0,"margin_bottom_mobile":0}},"vitals_1dfa728d_Gdrecq":{"type":"vitals-1dfa728d","blocks":{"icon_DFpVMx":{"type":"icon","settings":{"icon_type":"icon","icon":"none","font_awesome":"<i class=\"fas fa-check\"><\/i>","image_shape":"square","image_corner_radius":0,"icon_color_enabled":false,"icon_color":"#222222","icon_title":"Effective hand strengthening","icon_description":"Provides a satisfying squeeze to help strengthen fingers and hand muscles during regular exercise."}},"icon_Rgyqkg":{"type":"icon","settings":{"icon_type":"icon","icon":"none","font_awesome":"<i class=\"fas fa-check\"><\/i>","image_shape":"square","image_corner_radius":0,"icon_color_enabled":false,"icon_color":"#222222","icon_title":"Secure, non-slip hold","icon_description":"Stays in your hand while you work out, so you can focus on movement instead of adjusting your grip."}},"icon_m6Pxbf":{"type":"icon","settings":{"icon_type":"icon","icon":"none","font_awesome":"<i class=\"fas fa-check\"><\/i>","image_shape":"square","image_corner_radius":0,"icon_color_enabled":false,"icon_color":"#222222","icon_title":"Smooth finger alignment","icon_description":"Designed not to bind or twist, helping maintain natural alignment of your fingers as you squeeze."}},"icon_xMWaVE":{"type":"icon","settings":{"icon_type":"icon","icon":"none","font_awesome":"<i class=\"fas fa-check\"><\/i>","image_shape":"square","image_corner_radius":0,"icon_color_enabled":false,"icon_color":"#222222","icon_title":"Compact single-pack design","icon_description":"Comes as a single pack, easy to keep in a bag or drawer for quick hand exercises anytime."}}},"block_order":["icon_DFpVMx","icon_Rgyqkg","icon_m6Pxbf","icon_xMWaVE"],"name":"🧡 Vitals: Value Icons Cards & Image","settings":{"image":"shopify:\/\/shop_images\/cmimgopt-6d5cea1a-2c4a-477f-9e7f-3ee3dbe94500.jpg","image_aspect_ratio":"square","image_corner_radius":0,"image_size":"medium","position_on_desktop":"center","position_on_mobile":"above","icon_color":"#222222","icon_size":28,"icon_background":"none","icon_background_color":"#dfdfdf","icon_background_gradient":"linear-gradient(to right, #fed951, #ff46c7)","icon_border_color":"#222222","icon_background_corner_radius":0,"icons_mobile_layout":"2","space_between_icons":64,"icon_title_size":"16","icon_title_color":"#222222","icon_description_size":"14","icon_description_color":"#222222","icon_block_style":"color","icon_block_background":"#ffffff","icon_block_opacity":100,"icon_block_border":"#222222","icon_block_shadow":false,"icon_card_shadow_color":"#222222","shadow_size":"large","heading":"Best-Selling: Finger Hand Strengthener Grip","heading_size":"32","heading_style":"regular","heading_alignment":"center","heading_color":"#222222","section_background_style":"color","section_background":"#f5f5f5","section_gradient":"linear-gradient(90deg, rgba(245, 245, 245, 1), rgba(226, 226, 226, 1) 100%)","enable_animation":false,"overlay_color":"#222222","overlay_opacity":0,"section_width":80,"section_max_width":"","spacing_type":"mobile","padding_top":80,"padding_bottom":80,"margin_top":0,"margin_bottom":0,"padding_top_mobile":60,"padding_bottom_mobile":60,"margin_top_mobile":0,"margin_bottom_mobile":0,"product":""}},"vitals_fc2b5214_HN6rxq":{"type":"vitals-fc2b5214","blocks":{"caption_ENMPmi":{"type":"caption","settings":{"caption":"","caption_size":"16","caption_weight":"400","caption_color":"#222222","caption_alternative_font":false,"caption_font":"sans_serif_n4"}},"heading_Y4jdXG":{"type":"heading","settings":{"heading":"Loved by Many","heading_size":"32","heading_style":"regular","heading_color":"#222222","heading_alternative_font":false,"heading_font":"sans_serif_n4","heading_background":"none","heading_background_color":"#f5f5f5","heading_background_gradient":"linear-gradient(to right, #fed951, #ff46c7)","heading_background_corner_style":"round"}},"text_YxeGQR":{"type":"text","settings":{"description":"<p>Finger Hand Strengthener Grip - Strengthen grip with focused finger training <\/p>","description_size":"16","description_color":"#222222","description_alternative_font":false,"description_font":"sans_serif_n4"}},"benefit_APLRfW":{"type":"benefit","settings":{"icon_type":"icon","icon":"check-circle","font_awesome":"","icon_image_corner_radius":0,"change_icon_color":false,"icon_color":"#222222","benefit_text":"Build finger strength"}},"benefit_PhKDdt":{"type":"benefit","settings":{"icon_type":"icon","icon":"check-circle","font_awesome":"","icon_image_corner_radius":0,"change_icon_color":false,"icon_color":"#222222","benefit_text":"Improve hand stability"}},"benefit_BTQ4ad":{"type":"benefit","settings":{"icon_type":"icon","icon":"check-circle","font_awesome":"","icon_image_corner_radius":0,"change_icon_color":false,"icon_color":"#222222","benefit_text":"Comfortable squeeze resistance"}},"buttons_NqCwRH":{"type":"buttons","settings":{"buttons_size":"small","primary_button_behaviour":"link","primary_button_label":"SHOP NOW >","primary_button_link":"\/products\/finger-hand-strengthener-grip-d3d83dbiofrgc31bspmg","primary_button_style":"solid","primary_text_color":"#ffffff","primary_background_color":"#222222","primary_border_color":"#222222","primary_button_corner":0,"primary_new_tab":false,"secondary_button_label":"","secondary_button_link":"","secondary_button_style":"solid","secondary_text_color":"#ffffff","secondary_background_color":"#222222","secondary_border_color":"#222222","secondary_button_corner":0,"secondary_new_tab":false}}},"block_order":["caption_ENMPmi","heading_Y4jdXG","text_YxeGQR","benefit_APLRfW","benefit_PhKDdt","benefit_BTQ4ad","buttons_NqCwRH"],"name":"🧡 Vitals: Image & Benefit List","settings":{"image_source":"upload","image":"shopify:\/\/shop_images\/cmimgopt-061c46e8-f61f-4b1c-ac93-4840ac6c3694.jpg","image_url":"","aspect_ratio":"square","image_position_desktop":"left","image_position_mobile":"above","text_alignment":"left","text_box_width":50,"text_box_background_style":"color","text_box_background":"#f5f5f5","text_box_gradient":"linear-gradient(to right, #fed951, #ff46c7)","text_box_animation":false,"text_box_border_color":"#222222","corner_radius":0,"icon_color":"#222222","icon_size":20,"icon_background":"none","icon_background_color":"#d6d6d6","icon_background_gradient":"linear-gradient(to right, #fed951, #ff46c7)","icon_background_corner_radius":0,"benefit_text_color":"#222222","benefit_text_size":"16","section_background_type":"color","section_background":"","section_background_gradient":"linear-gradient(to right, #fed951, #ff46c7)","section_background_animation":false,"overlay_color":"#222222","overlay_opacity":0,"layout_type":"desktop","section_width":95,"section_max_width":"1100","padding_top":100,"padding_bottom":100,"margin_top":40,"margin_bottom":40,"section_width_mobile":90,"padding_top_mobile":30,"padding_bottom_mobile":30,"margin_top_mobile":0,"margin_bottom_mobile":0,"product":""}},"vitals_8e910774_ArUVhh":{"type":"vitals-8e910774","blocks":{"caption_dULKHq":{"type":"caption","settings":{"caption":"","caption_size":"16","caption_weight":"400","caption_color":"#222222","caption_alternative_font":false,"caption_font":"sans_serif_n4"}},"heading_J9J7WA":{"type":"heading","settings":{"heading":"About us","heading_size":"32","heading_style":"regular","heading_color":"#222222","heading_alternative_font":false,"heading_font":"sans_serif_n4"}},"text_qWJang":{"type":"text","settings":{"description":"<p>We're passionate about supporting healthy, active living. From workouts to wellness, we provide the essentials to power your journey.<\/p>","description_size":"16","description_color":"#222222","description_alternative_font":false,"description_font":"sans_serif_n4"}},"buttons_XgxPWQ":{"type":"buttons","disabled":true,"settings":{"primary_button_label":"BUTTON LABEL","primary_button_link":"","primary_button_style":"solid","primary_text_color":"#ffffff","primary_background_color":"#222222","primary_border_color":"#222222","primary_button_corner":0,"primary_new_tab":false,"secondary_button_label":"","secondary_button_link":"","secondary_button_style":"link","secondary_text_color":"#222222","secondary_background_color":"","secondary_border_color":"","secondary_button_corner":0,"secondary_new_tab":false}}},"block_order":["caption_dULKHq","heading_J9J7WA","text_qWJang","buttons_XgxPWQ"],"name":"🧡 Vitals: Text Box & Background","settings":{"image":"shopify:\/\/shop_images\/ai-banner-aboutUsImage-6a80a122da027.webp","overlay_opacity":40,"overlay_color":"#222222","desktop_banner_height":"medium","mobile_banner_height":"medium","section_background":"","add_parallax":false,"text_box_height":"default","text_box_background":"#ffffff","text_box_opacity":90,"text_box_border_radius":0,"desktop_content_position":"center-center","mobile_content_position":"center","layout_type":"desktop","section_width":100,"section_width_mobile":100,"section_max_width":"","padding_top":0,"padding_bottom":0,"margin_top":0,"margin_bottom":0,"padding_top_mobile":0,"padding_bottom_mobile":0,"margin_top_mobile":0,"margin_bottom_mobile":0}},"vitals_14a1bc53_pY9U3e":{"type":"vitals-14a1bc53","blocks":{"icon_34pedr":{"type":"icon","settings":{"icon_type":"icon","icon":"shipping_fast","font_awesome":"","title":"Fast Shipping","text_link":"","change_icon_color":false,"block_icon_color":"#ffffff","change_text_color":false,"block_text_color":"#ffffff","text_alternative_font":false,"text_font":"sans_serif_n4"}},"icon_mJWahP":{"type":"icon","settings":{"icon_type":"icon","icon":"shield_alt","font_awesome":"","title":"Secure Checkout","text_link":"","change_icon_color":false,"block_icon_color":"#ffffff","change_text_color":false,"block_text_color":"#ffffff","text_alternative_font":false,"text_font":"sans_serif_n4"}},"icon_xyaJBa":{"type":"icon","settings":{"icon_type":"icon","icon":"undo_alt","font_awesome":"","title":"Easy Returns","text_link":"","change_icon_color":false,"block_icon_color":"#ffffff","change_text_color":false,"block_text_color":"#ffffff","text_alternative_font":false,"text_font":"sans_serif_n4"}},"icon_PnnV7A":{"type":"icon","settings":{"icon_type":"icon","icon":"comments","font_awesome":"","title":"Customer Support","text_link":"","change_icon_color":false,"block_icon_color":"#ffffff","change_text_color":false,"block_text_color":"#ffffff","text_alternative_font":false,"text_font":"sans_serif_n4"}}},"block_order":["icon_34pedr","icon_mJWahP","icon_xyaJBa","icon_PnnV7A"],"name":"🧡 Vitals: Rotating Bar & Icons","settings":{"rotating_bar_layout":"auto-rotating","icon_alignment":"left","rotating_bar_speed":"70","space_between_icons":40,"rotating_bar_height":"medium","text_size":"16","text_style":"regular","text_color":"#222222","icon_color":"#222222","icon_size":20,"line_thickness":1,"section_background":"color","rotating_bar_background":"#f5f5f5","section_gradient":"linear-gradient(to right, #fed951, #ff46c7)","top_margin":0,"bottom_margin":80,"top_margin_mobile":0,"bottom_margin_mobile":60}},"1754397233c608e087":{"type":"apps","blocks":{"vitals_reviews_carousel_M8JmxU":{"type":"shopify:\/\/apps\/vitals\/blocks\/reviews-carousel\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8","settings":{"hide_mock_data":false}}},"block_order":["vitals_reviews_carousel_M8JmxU"],"settings":{"include_margins":true}},"1754471878711dceee":{"type":"apps","blocks":{"vitals_all_reviews_badge_VnpmCc":{"type":"shopify:\/\/apps\/vitals\/blocks\/all-reviews-badge\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8","settings":{}}},"block_order":["vitals_all_reviews_badge_VnpmCc"],"settings":{"include_margins":true}},"vitals_321d44ce_napVwj":{"type":"vitals-321d44ce","blocks":{"caption_RcrBtR":{"type":"caption","settings":{"caption":"","caption_size":"16","caption_weight":"400","caption_color":"#222222","caption_alternative_font":false,"caption_font":"sans_serif_n4"}},"heading_tfLz7k":{"type":"heading","settings":{"heading":"Find Your Fitness Essentials","heading_size":"32","heading_style":"regular","heading_color":"#222222","heading_alternative_font":false,"heading_font":"sans_serif_n4","heading_background":"none","heading_background_color":"#f5f5f5","heading_background_gradient":"linear-gradient(to right, #fed951, #ff46c7)","heading_background_corner_style":"round"}},"text_NVpYXB":{"type":"text","settings":{"description":"<p>Shop items designed for strength, balance, and energy<\/p>","description_size":"16","description_color":"#222222","description_alternative_font":false,"description_font":"sans_serif_n4"}},"buttons_pRpxTz":{"type":"buttons","settings":{"primary_button_behaviour":"link","primary_button_label":"SHOP NOW >","primary_button_link":"shopify:\/\/collections\/all","primary_button_style":"solid","primary_text_color":"#ffffff","primary_background_color":"#222222","primary_border_color":"#222222","primary_button_corner":0,"primary_new_tab":false,"secondary_button_label":"","secondary_button_link":"","secondary_button_style":"solid","secondary_text_color":"#ffffff","secondary_background_color":"#222222","secondary_border_color":"#222222","secondary_button_corner":0,"secondary_new_tab":false}}},"block_order":["caption_RcrBtR","heading_tfLz7k","text_NVpYXB","buttons_pRpxTz"],"name":"🧡 Vitals: Text & Button","settings":{"content_alignment":"left","content_layout_desktop":"horizontal","section_background_style":"regular","section_background":"#f5f5f5","section_gradient":"linear-gradient(0deg, rgba(247, 247, 247, 1) 48%, rgba(239, 239, 239, 1) 57%)","enable_animation":true,"block_corner_radius":0,"layout_type":"mobile","section_width":100,"content_width":100,"section_width_mobile":100,"content_width_mobile":100,"section_max_width":"1100","padding_top":60,"padding_bottom":60,"margin_top":0,"margin_bottom":90,"padding_top_mobile":40,"padding_bottom_mobile":40,"margin_top_mobile":0,"margin_bottom_mobile":70}},"17868160103c3287cb":{"type":"_blocks","settings":{}},"178681609760813852":{"type":"_blocks","settings":{}},"1786816275e77c8c94":{"type":"_blocks","settings":{}}},"order":["vitals_8e910774_CnEQtd","vitals_ce7789ea_RaHGkC","vitals_a70464d0_CpyexC","vitals_d9d73599_djGjeH","vitals_1dfa728d_Gdrecq","vitals_fc2b5214_HN6rxq","vitals_8e910774_ArUVhh","vitals_14a1bc53_pY9U3e","1754397233c608e087","1754471878711dceee","vitals_321d44ce_napVwj","17868160103c3287cb","178681609760813852","1786816275e77c8c94"]}
+{
+  "sections": {
+    "pro_hero_banner": {
+      "type": "pro-hero-banner",
+      "settings": {}
+    },
+    "pro_marquee_ticker": {
+      "type": "pro-marquee-ticker",
+      "settings": {}
+    },
+    "pro_feature_showcase": {
+      "type": "pro-feature-showcase",
+      "settings": {}
+    },
+    "vitals_d9d73599_djGjeH": {
+      "type": "vitals-d9d73599",
+      "blocks": {
+        "heading_JiLkaU": {
+          "type": "heading",
+          "settings": {
+            "heading": "Featured Bestsellers",
+            "heading_size": "32",
+            "heading_style": "regular",
+            "description": "",
+            "description_size": "16",
+            "text_color": "#222222"
+          }
+        },
+        "collection_PUReKm": {
+          "type": "collection",
+          "settings": {
+            "collection": "new-arrivals",
+            "tab_title": "",
+            "products_limit": 4
+          }
+        },
+        "button_Q7j7zM": {
+          "type": "button",
+          "settings": {
+            "primary_button_label": "Shop All Gear >",
+            "primary_button_link": "shopify:\/\/collections\/all",
+            "primary_button_style": "solid",
+            "primary_text_color": "#ffffff",
+            "primary_background_color": "#111827",
+            "primary_border_color": "#111827",
+            "button_alignment": "center",
+            "primary_button_corner": 8,
+            "primary_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_JiLkaU",
+        "collection_PUReKm",
+        "button_Q7j7zM"
+      ],
+      "name": "🧡 Vitals: Featured Collection Grid",
+      "settings": {
+        "image_aspect_ratio": "square",
+        "cards_radius": 12,
+        "show_vendor": false,
+        "show_product_rating": true,
+        "product_name_vendor_size": "14",
+        "product_card_text_color": "#111827",
+        "price_size": "14",
+        "price_color": "#111827",
+        "product_card_discounted_price_color": "#ff4757",
+        "product_text_alignment": "left",
+        "products_per_row_desktop": "4",
+        "products_per_row_mobile": "2",
+        "hide_collections": false,
+        "product_card_gap": 24,
+        "text_alignment": "center",
+        "tabs_color": "#111827",
+        "tabs_size": "16",
+        "section_background_style": "color",
+        "section_background": "#f8fafc",
+        "overlay_color": "#222222",
+        "overlay_opacity": 0,
+        "section_width": 100,
+        "section_max_width": "1200",
+        "spacing_type": "desktop",
+        "padding_top": 70,
+        "padding_bottom": 80,
+        "margin_top": 0,
+        "margin_bottom": 0,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0
+      }
+    },
+    "pro_about_banner": {
+      "type": "pro-about-banner",
+      "settings": {}
+    },
+    "1754397233c608e087": {
+      "type": "apps",
+      "blocks": {
+        "vitals_reviews_carousel_M8JmxU": {
+          "type": "shopify:\/\/apps\/vitals\/blocks\/reviews-carousel\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+          "settings": {
+            "hide_mock_data": false
+          }
+        }
+      },
+      "block_order": [
+        "vitals_reviews_carousel_M8JmxU"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "1754471878711dceee": {
+      "type": "apps",
+      "blocks": {
+        "vitals_all_reviews_badge_VnpmCc": {
+          "type": "shopify:\/\/apps\/vitals\/blocks\/all-reviews-badge\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "vitals_all_reviews_badge_VnpmCc"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    }
+  },
+  "order": [
+    "pro_hero_banner",
+    "pro_marquee_ticker",
+    "pro_feature_showcase",
+    "vitals_d9d73599_djGjeH",
+    "pro_about_banner",
+    "1754397233c608e087",
+    "1754471878711dceee"
+  ]
+}

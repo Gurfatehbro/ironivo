@@ -1,0 +1,15 @@
+{% comment %}
+  Pro Live Sales Toast Popup for Social Proof
+{% endcomment %}
+
+<div class="pro-sales-toast" id="proSalesToast" aria-live="polite">
+  <button type="button" class="pro-toast-close" onclick="this.parentElement.classList.remove('is-active')" aria-label="Close">×</button>
+  <div class="pro-toast-avatar">
+    <img src="{{ 'ironivo-icon.svg' | asset_url }}" alt="Ironivo Icon" width="28" height="28">
+  </div>
+  <div class="pro-toast-details">
+    <p class="pro-toast-headline"><strong id="proToastCustomer">Alex M. from California</strong></p>
+    <p class="pro-toast-product">Purchased <strong>Ironivo Finger & Hand Grip Pro</strong></p>
+    <span class="pro-toast-time" id="proToastTime">2 minutes ago • Verified Buyer ✓</span>
+  </div>
+</div>

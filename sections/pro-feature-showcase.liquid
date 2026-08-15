@@ -1,0 +1,112 @@
+{% comment %}
+  Pro Feature Showcase - Product Spotlight & High Tech Breakdown
+{% endcomment %}
+
+<div id="pro-features" class="pro-showcase-section page-width">
+  <!-- Feature 1: The Engineering -->
+  <div class="pro-showcase-grid pro-animate-on-scroll">
+    <div class="pro-showcase-visual">
+      <div class="pro-card-3d">
+        <img 
+          src="{{ 'product-hero.jpg' | asset_url }}" 
+          alt="Ironivo Precision Hand Strengthener"
+          class="pro-showcase-img"
+          loading="lazy"
+        >
+        <div class="pro-tag-badge">AEROSPACE GRADE</div>
+      </div>
+    </div>
+
+    <div class="pro-showcase-content">
+      <div class="pro-section-tag">PRECISION ENGINEERING</div>
+      <h2 class="pro-showcase-heading">Built for Maximum Resistance & Zero Fatigue</h2>
+      <p class="pro-showcase-desc">
+        Crafted with aerospace-grade tension springs and an ultra-durable ergonomic chassis. Each finger piston moves independently, allowing targeted isolation for weak fingers and total hand stabilization.
+      </p>
+
+      <ul class="pro-feature-list">
+        <li>
+          <span class="pro-check-icon">✓</span>
+          <div>
+            <strong>Independent Finger Resistance</strong>
+            <p>Develop true grip symmetry and individual finger power.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pro-check-icon">✓</span>
+          <div>
+            <strong>Tactile Non-Slip Silicon Pads</strong>
+            <p>Prevents blister formation and ensures zero slip during max effort sets.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pro-check-icon">✓</span>
+          <div>
+            <strong>Compact EDC Design</strong>
+            <p>Train anytime, anywhere — at your desk, commute, or pre-climb warmups.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="pro-showcase-action">
+        <a href="{{ routes.all_products_collection_url }}" class="pro-btn pro-btn--primary">
+          <span>GET YOURS TODAY &rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 2: In-Action Athletic Performance -->
+  <div class="pro-showcase-grid pro-showcase-grid--reversed pro-animate-on-scroll" style="margin-top: 80px;">
+    <div class="pro-showcase-content">
+      <div class="pro-section-tag">ATHLETIC PERFORMANCE</div>
+      <h2 class="pro-showcase-heading">Unlock Crushing Forearm Density & Endurance</h2>
+      <p class="pro-showcase-desc">
+        Grip strength is the #1 predictor of total upper body pulling power and joint longevity. Ironivo helps climbers send harder routes, lifters break deadlift PRs, and athletes recover faster.
+      </p>
+
+      <div class="pro-metric-cards">
+        <div class="pro-metric-box">
+          <span class="pro-metric-number">+38%</span>
+          <span class="pro-metric-text">Grip Force in 3 Weeks</span>
+        </div>
+        <div class="pro-metric-box">
+          <span class="pro-metric-number">100%</span>
+          <span class="pro-metric-text">Tendon Recovery Support</span>
+        </div>
+      </div>
+
+      <div class="pro-showcase-action">
+        <a href="{{ routes.all_products_collection_url }}" class="pro-btn pro-btn--primary">
+          <span>ORDER NOW • 30-DAY GUARANTEE</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="pro-showcase-visual">
+      <div class="pro-card-3d">
+        <img 
+          src="{{ 'hand-training.jpg' | asset_url }}" 
+          alt="Athlete Training Grip Strength"
+          class="pro-showcase-img"
+          loading="lazy"
+        >
+        <div class="pro-tag-badge">PRO ATHLETE TESTED</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "⚡ Pro Feature Showcase",
+  "tag": "section",
+  "class": "section-pro-showcase",
+  "settings": [],
+  "presets": [
+    {
+      "name": "⚡ Pro Feature Showcase"
+    }
+  ]
+}
+{% endschema %}

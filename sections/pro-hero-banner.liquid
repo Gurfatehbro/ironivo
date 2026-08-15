@@ -1,0 +1,77 @@
+{% comment %}
+  Pro Hero Banner - High-Impact Luxury Athletic Design
+{% endcomment %}
+
+<div class="pro-hero-section">
+  <div class="pro-hero-bg">
+    <img 
+      src="{{ 'hero-banner.jpg' | asset_url }}" 
+      alt="Ironivo Grip & Performance" 
+      class="pro-hero-img"
+      loading="eager"
+    >
+    <div class="pro-hero-overlay"></div>
+  </div>
+
+  <div class="pro-hero-container page-width">
+    <div class="pro-hero-content pro-animate-fade-up">
+      <div class="pro-hero-badge">
+        <span class="pro-pulse-dot"></span>
+        <span>NEW RELEASE • ATHLETE SERIES</span>
+      </div>
+
+      <h1 class="pro-hero-title">
+        UNLEASH MAXIMUM <span class="pro-text-gradient">GRIP POWER</span>
+      </h1>
+
+      <p class="pro-hero-subtitle">
+        Engineered for climbers, lifters, and high-performance athletes. Build crushing forearm strength and unbreakable finger stability with precision resistance technology.
+      </p>
+
+      <div class="pro-hero-cta-group">
+        <a href="{{ routes.all_products_collection_url }}" class="pro-btn pro-btn--primary pro-btn--glow">
+          <span>SHOP THE COLLECTION</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+
+        <a href="#pro-features" class="pro-btn pro-btn--glass">
+          <span>EXPLORE FEATURES</span>
+        </a>
+      </div>
+
+      <div class="pro-hero-stats">
+        <div class="pro-stat-item">
+          <span class="pro-stat-value">15,000+</span>
+          <span class="pro-stat-label">Athletes Powered</span>
+        </div>
+        <div class="pro-stat-divider"></div>
+        <div class="pro-stat-item">
+          <span class="pro-stat-value">4.9 / 5.0</span>
+          <span class="pro-stat-label">Verified Reviews</span>
+        </div>
+        <div class="pro-stat-divider"></div>
+        <div class="pro-stat-item">
+          <span class="pro-stat-value">30-Day</span>
+          <span class="pro-stat-label">Money-Back Trial</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "⚡ Pro Hero Banner",
+  "tag": "section",
+  "class": "section-pro-hero",
+  "settings": [],
+  "presets": [
+    {
+      "name": "⚡ Pro Hero Banner"
+    }
+  ]
+}
+{% endschema %}

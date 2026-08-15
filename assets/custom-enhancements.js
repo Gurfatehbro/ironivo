@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initStickyAddToCart();
   initFreeShippingBar();
   initUrgencyCounter();
+  initScrollAnimations();
+  initSalesToast();
+  initCard3DTilt();
 });
 
 /* --------------------------------------------------------------------------
@@ -206,3 +209,93 @@ function initUrgencyCounter() {
     }, 7000);
   });
 }
+
+/* --------------------------------------------------------------------------
+   5. Scroll-Triggered Reveal Animations
+   -------------------------------------------------------------------------- */
+function initScrollAnimations() {
+  const animatedElements = document.querySelectorAll('.pro-animate-on-scroll');
+  if (!animatedElements.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    rootMargin: '0px 0px -60px 0px',
+    threshold: 0.15
+  });
+
+  animatedElements.forEach(el => observer.observe(el));
+}
+
+/* --------------------------------------------------------------------------
+   6. Live Sales Toast Popup
+   -------------------------------------------------------------------------- */
+function initSalesToast() {
+  const toast = document.getElementById('proSalesToast');
+  if (!toast) return;
+
+  const customers = [
+    { name: 'Alex M. from California', time: '2 minutes ago' },
+    { name: 'Liam K. from London, UK', time: '4 minutes ago' },
+    { name: 'Marcus D. from Texas', time: '1 minute ago' },
+    { name: 'Sophia R. from New York', time: '7 minutes ago' },
+    { name: 'David B. from Toronto, CA', time: '3 minutes ago' },
+    { name: 'Ethan W. from Florida', time: '5 minutes ago' }
+  ];
+
+  let index = 0;
+
+  function showToast() {
+    const customer = customers[index % customers.length];
+    const nameEl = document.getElementById('proToastCustomer');
+    const timeEl = document.getElementById('proToastTime');
+
+    if (nameEl) nameEl.textContent = customer.name;
+    if (timeEl) timeEl.textContent = `${customer.time} • Verified Buyer ✓`;
+
+    toast.classList.add('is-active');
+
+    setTimeout(() => {
+      toast.classList.remove('is-active');
+    }, 5500);
+
+    index++;
+  }
+
+  // Initial show after 4 seconds, then repeat every 18 seconds
+  setTimeout(showToast, 4000);
+  setInterval(showToast, 18000);
+}
+
+/* --------------------------------------------------------------------------
+   7. 3D Card Interactive Tilt Effect
+   -------------------------------------------------------------------------- */
+function initCard3DTilt() {
+  const cards = document.querySelectorAll('.pro-card-3d');
+  if (!cards.length) return;
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = ((y - centerY) / centerY) * -6;
+      const rotateY = ((x - centerX) / centerX) * 6;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+    });
+  });
+}
+
