@@ -1,0 +1,109 @@
+{% comment %}
+  Ironivo Pro Hero Banner
+{% endcomment %}
+
+<div class="pro-hero-section">
+  <div class="pro-hero-bg">
+    <img 
+      src="{{ 'hero-banner.jpg' | asset_url }}" 
+      alt="{{ section.settings.heading | default: 'Ironivo Grip & Performance' }}" 
+      class="pro-hero-img"
+      loading="eager"
+    >
+    <div class="pro-hero-overlay"></div>
+  </div>
+
+  <div class="pro-hero-container page-width">
+    <div class="pro-hero-content pro-animate-fade-up">
+      <div class="pro-hero-badge">
+        <span class="pro-pulse-dot"></span>
+        <span>{{ section.settings.badge_text | default: 'NEW RELEASE • ATHLETE PRO SERIES' }}</span>
+      </div>
+
+      <h1 class="pro-hero-title">
+        {{ section.settings.heading | default: 'UNLEASH MAXIMUM' }} <span class="pro-text-gradient">{{ section.settings.heading_gradient | default: 'GRIP POWER' }}</span>
+      </h1>
+
+      <p class="pro-hero-subtitle">
+        {{ section.settings.subheading | default: 'Engineered for climbers, lifters, and high-performance athletes. Build crushing forearm strength and unbreakable finger stability with precision resistance technology.' }}
+      </p>
+
+      <div class="pro-hero-cta-group">
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="pro-btn pro-btn--primary pro-btn--glow">
+          <span>{{ section.settings.button_label | default: 'SHOP THE COLLECTION' }} &rarr;</span>
+        </a>
+
+        <a href="#pro-features" class="pro-btn pro-btn--glass">
+          <span>EXPLORE FEATURES</span>
+        </a>
+      </div>
+
+      <div class="pro-hero-stats">
+        <div class="pro-stat-item">
+          <span class="pro-stat-value">15,000+</span>
+          <span class="pro-stat-label">Athletes Powered</span>
+        </div>
+        <div class="pro-stat-divider"></div>
+        <div class="pro-stat-item">
+          <span class="pro-stat-value">4.9 / 5.0</span>
+          <span class="pro-stat-label">Verified Reviews</span>
+        </div>
+        <div class="pro-stat-divider"></div>
+        <div class="pro-stat-item">
+          <span class="pro-stat-value">30-Day</span>
+          <span class="pro-stat-label">Risk-Free Trial</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "section-hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Text",
+      "default": "NEW RELEASE • ATHLETE PRO SERIES"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading Part 1",
+      "default": "UNLEASH MAXIMUM"
+    },
+    {
+      "type": "text",
+      "id": "heading_gradient",
+      "label": "Heading Accent",
+      "default": "GRIP POWER"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Engineered for climbers, lifters, and high-performance athletes. Build crushing forearm strength and unbreakable finger stability."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "SHOP THE COLLECTION"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

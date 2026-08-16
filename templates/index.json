@@ -1,139 +1,41 @@
 {
   "sections": {
-    "pro_hero_banner": {
-      "type": "pro-hero-banner",
+    "hero": {
+      "type": "hero",
       "settings": {}
     },
-    "pro_marquee_ticker": {
-      "type": "pro-marquee-ticker",
+    "marquee": {
+      "type": "marquee",
       "settings": {}
     },
-    "pro_feature_showcase": {
-      "type": "pro-feature-showcase",
+    "features": {
+      "type": "features",
       "settings": {}
     },
-    "vitals_d9d73599_djGjeH": {
-      "type": "vitals-d9d73599",
-      "blocks": {
-        "heading_JiLkaU": {
-          "type": "heading",
-          "settings": {
-            "heading": "Featured Bestsellers",
-            "heading_size": "32",
-            "heading_style": "regular",
-            "description": "",
-            "description_size": "16",
-            "text_color": "#222222"
-          }
-        },
-        "collection_PUReKm": {
-          "type": "collection",
-          "settings": {
-            "collection": "new-arrivals",
-            "tab_title": "",
-            "products_limit": 4
-          }
-        },
-        "button_Q7j7zM": {
-          "type": "button",
-          "settings": {
-            "primary_button_label": "Shop All Gear >",
-            "primary_button_link": "shopify:\/\/collections\/all",
-            "primary_button_style": "solid",
-            "primary_text_color": "#ffffff",
-            "primary_background_color": "#111827",
-            "primary_border_color": "#111827",
-            "button_alignment": "center",
-            "primary_button_corner": 8,
-            "primary_new_tab": false
-          }
-        }
-      },
-      "block_order": [
-        "heading_JiLkaU",
-        "collection_PUReKm",
-        "button_Q7j7zM"
-      ],
-      "name": "🧡 Vitals: Featured Collection Grid",
-      "settings": {
-        "image_aspect_ratio": "square",
-        "cards_radius": 12,
-        "show_vendor": false,
-        "show_product_rating": true,
-        "product_name_vendor_size": "14",
-        "product_card_text_color": "#111827",
-        "price_size": "14",
-        "price_color": "#111827",
-        "product_card_discounted_price_color": "#ff4757",
-        "product_text_alignment": "left",
-        "products_per_row_desktop": "4",
-        "products_per_row_mobile": "2",
-        "hide_collections": false,
-        "product_card_gap": 24,
-        "text_alignment": "center",
-        "tabs_color": "#111827",
-        "tabs_size": "16",
-        "section_background_style": "color",
-        "section_background": "#f8fafc",
-        "overlay_color": "#222222",
-        "overlay_opacity": 0,
-        "section_width": 100,
-        "section_max_width": "1200",
-        "spacing_type": "desktop",
-        "padding_top": 70,
-        "padding_bottom": 80,
-        "margin_top": 0,
-        "margin_bottom": 0,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "margin_top_mobile": 0,
-        "margin_bottom_mobile": 0
-      }
-    },
-    "pro_about_banner": {
-      "type": "pro-about-banner",
+    "bestsellers": {
+      "type": "bestsellers",
       "settings": {}
     },
-    "1754397233c608e087": {
-      "type": "apps",
-      "blocks": {
-        "vitals_reviews_carousel_M8JmxU": {
-          "type": "shopify:\/\/apps\/vitals\/blocks\/reviews-carousel\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
-          "settings": {
-            "hide_mock_data": false
-          }
-        }
-      },
-      "block_order": [
-        "vitals_reviews_carousel_M8JmxU"
-      ],
-      "settings": {
-        "include_margins": true
-      }
+    "about": {
+      "type": "about",
+      "settings": {}
     },
-    "1754471878711dceee": {
-      "type": "apps",
-      "blocks": {
-        "vitals_all_reviews_badge_VnpmCc": {
-          "type": "shopify:\/\/apps\/vitals\/blocks\/all-reviews-badge\/aeb48102-2a5a-4f39-bdbd-d8d49f4e20b8",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "vitals_all_reviews_badge_VnpmCc"
-      ],
-      "settings": {
-        "include_margins": true
-      }
+    "reviews": {
+      "type": "reviews",
+      "settings": {}
+    },
+    "trust": {
+      "type": "trust",
+      "settings": {}
     }
   },
   "order": [
-    "pro_hero_banner",
-    "pro_marquee_ticker",
-    "pro_feature_showcase",
-    "vitals_d9d73599_djGjeH",
-    "pro_about_banner",
-    "1754397233c608e087",
-    "1754471878711dceee"
+    "hero",
+    "marquee",
+    "features",
+    "bestsellers",
+    "about",
+    "reviews",
+    "trust"
   ]
 }

@@ -1,0 +1,72 @@
+{% comment %}
+  About & Mission Section
+{% endcomment %}
+
+<div class="pro-about-section">
+  <div class="pro-about-bg">
+    <img 
+      src="{{ 'about-banner.jpg' | asset_url }}" 
+      alt="Ironivo Performance Labs"
+      class="pro-about-img"
+      loading="lazy"
+    >
+    <div class="pro-about-overlay"></div>
+  </div>
+
+  <div class="pro-about-container page-width">
+    <div class="pro-about-box pro-animate-on-scroll">
+      <div class="pro-section-tag">{{ section.settings.tag | default: 'OUR MISSION' }}</div>
+      <h2 class="pro-about-title">{{ section.settings.title | default: 'ENGINEERED FOR THE UNRELENTING' }}</h2>
+      <p class="pro-about-text">
+        {{ section.settings.text | default: 'At Ironivo, we believe physical capability starts with the hands. We obsess over biometric resistance curves, military-grade materials, and biomechanical ergonomics so you never miss a lift, drop a hold, or compromise your potential.' }}
+      </p>
+      <div class="pro-about-stats">
+        <div>
+          <span class="pro-about-stat-num">100%</span>
+          <span class="pro-about-stat-label">Satisfaction Guaranteed</span>
+        </div>
+        <div>
+          <span class="pro-about-stat-num">50K+</span>
+          <span class="pro-about-stat-label">Reps Tested Per Unit</span>
+        </div>
+        <div>
+          <span class="pro-about-stat-num">24/7</span>
+          <span class="pro-about-stat-label">Athlete Support</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About Mission",
+  "tag": "section",
+  "class": "section-about",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tag",
+      "label": "Tag",
+      "default": "OUR MISSION"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "ENGINEERED FOR THE UNRELENTING"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "At Ironivo, we believe physical capability starts with the hands. We obsess over biometric resistance curves, military-grade materials, and biomechanical ergonomics so you never miss a lift, drop a hold, or compromise your potential."
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Mission"
+    }
+  ]
+}
+{% endschema %}

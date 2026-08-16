@@ -1,9 +1,9 @@
 {% comment %}
-  Pro Feature Showcase - Product Spotlight & High Tech Breakdown
+  Features Showcase Section
 {% endcomment %}
 
 <div id="pro-features" class="pro-showcase-section page-width">
-  <!-- Feature 1: The Engineering -->
+  <!-- Feature 1 -->
   <div class="pro-showcase-grid pro-animate-on-scroll">
     <div class="pro-showcase-visual">
       <div class="pro-card-3d">
@@ -19,9 +19,9 @@
 
     <div class="pro-showcase-content">
       <div class="pro-section-tag">PRECISION ENGINEERING</div>
-      <h2 class="pro-showcase-heading">Built for Maximum Resistance & Zero Fatigue</h2>
+      <h2 class="pro-showcase-heading">{{ section.settings.feature_1_heading | default: 'Built for Maximum Resistance & Zero Fatigue' }}</h2>
       <p class="pro-showcase-desc">
-        Crafted with aerospace-grade tension springs and an ultra-durable ergonomic chassis. Each finger piston moves independently, allowing targeted isolation for weak fingers and total hand stabilization.
+        {{ section.settings.feature_1_desc | default: 'Crafted with aerospace-grade tension springs and an ultra-durable ergonomic chassis. Each finger piston moves independently, allowing targeted isolation for weak fingers and total hand stabilization.' }}
       </p>
 
       <ul class="pro-feature-list">
@@ -56,13 +56,13 @@
     </div>
   </div>
 
-  <!-- Feature 2: In-Action Athletic Performance -->
+  <!-- Feature 2 -->
   <div class="pro-showcase-grid pro-showcase-grid--reversed pro-animate-on-scroll" style="margin-top: 80px;">
     <div class="pro-showcase-content">
       <div class="pro-section-tag">ATHLETIC PERFORMANCE</div>
-      <h2 class="pro-showcase-heading">Unlock Crushing Forearm Density & Endurance</h2>
+      <h2 class="pro-showcase-heading">{{ section.settings.feature_2_heading | default: 'Unlock Crushing Forearm Density & Endurance' }}</h2>
       <p class="pro-showcase-desc">
-        Grip strength is the #1 predictor of total upper body pulling power and joint longevity. Ironivo helps climbers send harder routes, lifters break deadlift PRs, and athletes recover faster.
+        {{ section.settings.feature_2_desc | default: 'Grip strength is the #1 predictor of total upper body pulling power and joint longevity. Ironivo helps climbers send harder routes, lifters break deadlift PRs, and athletes recover faster.' }}
       </p>
 
       <div class="pro-metric-cards">
@@ -78,7 +78,7 @@
 
       <div class="pro-showcase-action">
         <a href="{{ routes.all_products_collection_url }}" class="pro-btn pro-btn--primary">
-          <span>ORDER NOW • 30-DAY GUARANTEE</span>
+          <span>ORDER NOW • 30-DAY TRIAL</span>
         </a>
       </div>
     </div>
@@ -99,13 +99,38 @@
 
 {% schema %}
 {
-  "name": "⚡ Pro Feature Showcase",
+  "name": "Features Showcase",
   "tag": "section",
-  "class": "section-pro-showcase",
-  "settings": [],
+  "class": "section-features",
+  "settings": [
+    {
+      "type": "text",
+      "id": "feature_1_heading",
+      "label": "Feature 1 Heading",
+      "default": "Built for Maximum Resistance & Zero Fatigue"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_1_desc",
+      "label": "Feature 1 Description",
+      "default": "Crafted with aerospace-grade tension springs and an ultra-durable ergonomic chassis."
+    },
+    {
+      "type": "text",
+      "id": "feature_2_heading",
+      "label": "Feature 2 Heading",
+      "default": "Unlock Crushing Forearm Density & Endurance"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_2_desc",
+      "label": "Feature 2 Description",
+      "default": "Grip strength is the #1 predictor of total upper body pulling power and joint longevity."
+    }
+  ],
   "presets": [
     {
-      "name": "⚡ Pro Feature Showcase"
+      "name": "Features Showcase"
     }
   ]
 }
