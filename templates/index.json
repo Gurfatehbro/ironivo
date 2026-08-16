@@ -12,10 +12,6 @@
       "type": "features",
       "settings": {}
     },
-    "bestsellers": {
-      "type": "bestsellers",
-      "settings": {}
-    },
     "about": {
       "type": "about",
       "settings": {}
@@ -33,7 +29,6 @@
     "hero",
     "marquee",
     "features",
-    "bestsellers",
     "about",
     "reviews",
     "trust"
