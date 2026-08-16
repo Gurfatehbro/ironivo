@@ -49,8 +49,8 @@
       </ul>
 
       <div class="pro-showcase-action">
-        <a href="#pro-bestsellers" class="pro-btn pro-btn--primary">
-          <span>SHOP EAGLE CLAW &rarr;</span>
+        <a href="{{ section.settings.feature_1_button_link | default: '/collections/all' }}" class="pro-btn pro-btn--primary">
+          <span>{{ section.settings.feature_1_button_label | default: 'Shop Eagle Claw' }} &rarr;</span>
         </a>
       </div>
     </div>
@@ -94,8 +94,8 @@
       </ul>
 
       <div class="pro-showcase-action">
-        <a href="#pro-bestsellers" class="pro-btn pro-btn--primary">
-          <span>SHOP LEVER BELT &rarr;</span>
+        <a href="{{ section.settings.feature_2_button_link | default: '/collections/all' }}" class="pro-btn pro-btn--primary">
+          <span>{{ section.settings.feature_2_button_label | default: 'Shop 2 Essentials' }} &rarr;</span>
         </a>
       </div>
     </div>
@@ -134,6 +134,17 @@
     },
     {
       "type": "text",
+      "id": "feature_1_button_label",
+      "label": "Feature 1 Button Label",
+      "default": "Shop Eagle Claw"
+    },
+    {
+      "type": "url",
+      "id": "feature_1_button_link",
+      "label": "Feature 1 Button Link"
+    },
+    {
+      "type": "text",
       "id": "feature_2_heading",
       "label": "Feature 2 Heading",
       "default": "Heavy-Duty 10mm Powerlifting Lever Belt"
@@ -143,6 +154,17 @@
       "id": "feature_2_desc",
       "label": "Feature 2 Description",
       "default": "Premium genuine leather with a heavy-duty stainless steel quick-release lever."
+    },
+    {
+      "type": "text",
+      "id": "feature_2_button_label",
+      "label": "Feature 2 Button Label",
+      "default": "Shop 2 Essentials"
+    },
+    {
+      "type": "url",
+      "id": "feature_2_button_link",
+      "label": "Feature 2 Button Link"
     }
   ],
   "presets": [
