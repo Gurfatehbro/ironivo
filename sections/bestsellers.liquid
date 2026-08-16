@@ -1,93 +1,72 @@
 {% comment %}
-  Bestsellers Featured Collection Section
+  Bestsellers Section - The 2 Flagship Essentials + Bundle
 {% endcomment %}
 
-<div class="preview-products-section">
+<div id="pro-bestsellers" class="preview-products-section">
   <div class="page-width">
     <div class="preview-section-header pro-animate-on-scroll">
-      <div class="pro-section-tag">{{ section.settings.tag | default: 'FEATURED GEAR' }}</div>
-      <h2 class="preview-section-title">{{ section.settings.title | default: 'TOP RATED PERFORMANCE TOOLS' }}</h2>
-      <p class="preview-section-subtitle">{{ section.settings.subtitle | default: 'Engineered to elevate your grip, forearm strength, and joint health.' }}</p>
+      <div class="pro-section-tag">{{ section.settings.tag | default: 'THE 2 FLAGSHIP ESSENTIALS' }}</div>
+      <h2 class="preview-section-title">{{ section.settings.title | default: 'ENGINEERED FOR SUPREME STRENGTH' }}</h2>
+      <p class="preview-section-subtitle">{{ section.settings.subtitle | default: 'Select your performance gear below with 30-day money-back guarantee.' }}</p>
     </div>
 
-    <div class="preview-grid pro-animate-on-scroll">
-      {%- assign collection = section.settings.collection -%}
-      {%- if collection != blank and collection.products.size > 0 -%}
-        {%- for product in collection.products limit: 4 -%}
-          <div class="preview-card">
-            <div class="preview-card-image-wrap">
-              {%- if product.featured_image != blank -%}
-                <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="preview-card-image" loading="lazy">
-              {%- else -%}
-                <img src="{{ 'product-hero.jpg' | asset_url }}" alt="{{ product.title | escape }}" class="preview-card-image" loading="lazy">
-              {%- endif -%}
-              {%- if product.compare_at_price > product.price -%}
-                <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">SALE</span>
-              {%- endif -%}
-            </div>
-            <div class="preview-card-content">
-              <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(4.9/5)</span></div>
-              <h3 class="preview-card-title">{{ product.title }}</h3>
-              <div class="preview-card-price-wrap">
-                <span class="preview-card-price">{{ product.price | money }}</span>
-                {%- if product.compare_at_price > product.price -%}
-                  <span class="preview-card-compare-price">{{ product.compare_at_price | money }}</span>
-                {%- endif -%}
-              </div>
-              <a href="{{ product.url }}" class="preview-card-btn" style="text-decoration: none; text-align: center; display: block;">View Product 🛒</a>
-            </div>
-          </div>
-        {%- endfor -%}
-      {%- else -%}
-        <!-- Out-of-the-box Default Cards -->
-        <div class="preview-card">
-          <div class="preview-card-image-wrap">
-            <img src="{{ 'product-hero.jpg' | asset_url }}" alt="Ironivo Finger & Hand Grip Pro" class="preview-card-image" loading="lazy">
-            <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">SAVE 30%</span>
-          </div>
-          <div class="preview-card-content">
-            <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(428 reviews)</span></div>
-            <h3 class="preview-card-title">Ironivo Finger & Hand Grip Pro</h3>
-            <div class="preview-card-price-wrap">
-              <span class="preview-card-price">$34.99</span>
-              <span class="preview-card-compare-price">$49.99</span>
-            </div>
-            <a href="{{ routes.all_products_collection_url }}" class="preview-card-btn" style="text-decoration: none; text-align: center; display: block;">Shop Now 🛒</a>
-          </div>
+    <div class="preview-grid pro-animate-on-scroll" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <!-- Product 1: Eagle Claw Gripper -->
+      <div class="preview-card">
+        <div class="preview-card-image-wrap">
+          <img src="{{ 'eagle-claw-gripper.jpg' | asset_url }}" alt="Ironivo Eagle Claw 5-Finger Gripper" class="preview-card-image" loading="lazy">
+          <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">BESTSELLER • SAVE 30%</span>
         </div>
+        <div class="preview-card-content">
+          <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(428 verified reviews)</span></div>
+          <h3 class="preview-card-title">Ironivo Eagle Claw 5-Finger Gripper</h3>
+          <p style="font-size: 1.35rem; color: #64748b; margin: 0 0 12px;">Individual 5-finger spring pistons with non-slip fingertip grips.</p>
+          <div class="preview-card-price-wrap">
+            <span class="preview-card-price">$34.99</span>
+            <span class="preview-card-compare-price">$49.99</span>
+          </div>
+          <a href="{{ routes.all_products_collection_url }}" class="preview-card-btn" style="text-decoration: none; text-align: center; display: block;">Buy Eagle Claw 🛒</a>
+        </div>
+      </div>
 
-        <div class="preview-card">
-          <div class="preview-card-image-wrap">
-            <img src="{{ 'hand-training.jpg' | asset_url }}" alt="Ironivo Heavy Duty Hand Gripper" class="preview-card-image" loading="lazy">
-            <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">BESTSELLER</span>
-          </div>
-          <div class="preview-card-content">
-            <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(312 reviews)</span></div>
-            <h3 class="preview-card-title">Ironivo Heavy Duty Hand Gripper</h3>
-            <div class="preview-card-price-wrap">
-              <span class="preview-card-price">$29.99</span>
-              <span class="preview-card-compare-price">$39.99</span>
-            </div>
-            <a href="{{ routes.all_products_collection_url }}" class="preview-card-btn" style="text-decoration: none; text-align: center; display: block;">Shop Now 🛒</a>
-          </div>
+      <!-- Product 2: Powerlifting Lever Belt -->
+      <div class="preview-card">
+        <div class="preview-card-image-wrap">
+          <img src="{{ 'lever-belt.jpg' | asset_url }}" alt="Ironivo 10mm Powerlifting Lever Belt" class="preview-card-image" loading="lazy">
+          <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">NEW RELEASE • SAVE 25%</span>
         </div>
+        <div class="preview-card-content">
+          <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(389 verified reviews)</span></div>
+          <h3 class="preview-card-title">Ironivo 10mm Powerlifting Lever Belt</h3>
+          <p style="font-size: 1.35rem; color: #64748b; margin: 0 0 12px;">10mm genuine black leather with stainless steel quick-release lever.</p>
+          <div class="preview-card-price-wrap">
+            <span class="preview-card-price">$79.99</span>
+            <span class="preview-card-compare-price">$109.99</span>
+          </div>
+          <a href="{{ routes.all_products_collection_url }}" class="preview-card-btn" style="text-decoration: none; text-align: center; display: block;">Buy Lever Belt 🛒</a>
+        </div>
+      </div>
 
-        <div class="preview-card">
-          <div class="preview-card-image-wrap">
-            <img src="{{ 'ironivo-emblem.jpg' | asset_url }}" alt="Ironivo Complete Athlete Kit" class="preview-card-image" loading="lazy">
-            <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">BUNDLE & SAVE</span>
-          </div>
-          <div class="preview-card-content">
-            <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(890 reviews)</span></div>
-            <h3 class="preview-card-title">Ironivo Complete Athlete Kit</h3>
-            <div class="preview-card-price-wrap">
-              <span class="preview-card-price">$59.99</span>
-              <span class="preview-card-compare-price">$89.99</span>
-            </div>
-            <a href="{{ routes.all_products_collection_url }}" class="preview-card-btn" style="text-decoration: none; text-align: center; display: block;">Shop Now 🛒</a>
-          </div>
+      <!-- Product 3: Power Athlete Bundle -->
+      <div class="preview-card" style="border: 2px solid #ff4757; position: relative;">
+        <div style="position: absolute; top: 0; right: 0; background: #ff4757; color: #ffffff; font-size: 1.1rem; font-weight: 800; padding: 4px 12px; border-bottom-left-radius: 8px; z-index: 10;">
+          MOST POPULAR
         </div>
-      {%- endif -%}
+        <div class="preview-card-image-wrap">
+          <img src="{{ 'ironivo-emblem.jpg' | asset_url }}" alt="Ironivo Ultimate Power Combo" class="preview-card-image" loading="lazy">
+          <span class="badge badge--sale" style="position: absolute; top: 12px; left: 12px;">COMBO • SAVE $30</span>
+        </div>
+        <div class="preview-card-content">
+          <div class="preview-card-stars">★★★★★ <span style="color: #64748b; font-size: 1.2rem;">(712 verified reviews)</span></div>
+          <h3 class="preview-card-title">Ironivo Ultimate Strength Bundle</h3>
+          <p style="font-size: 1.35rem; color: #64748b; margin: 0 0 12px;">Includes Eagle Claw Gripper + 10mm Lever Belt + Travel Bag.</p>
+          <div class="preview-card-price-wrap">
+            <span class="preview-card-price">$99.99</span>
+            <span class="preview-card-compare-price">$129.99</span>
+          </div>
+          <a href="{{ routes.all_products_collection_url }}" class="preview-card-btn" style="background: #ff4757; text-decoration: none; text-align: center; display: block;">Get The Bundle ⚡</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -102,24 +81,19 @@
       "type": "text",
       "id": "tag",
       "label": "Section Tag",
-      "default": "FEATURED GEAR"
+      "default": "THE 2 FLAGSHIP ESSENTIALS"
     },
     {
       "type": "text",
       "id": "title",
       "label": "Title",
-      "default": "TOP RATED PERFORMANCE TOOLS"
+      "default": "ENGINEERED FOR SUPREME STRENGTH"
     },
     {
       "type": "text",
       "id": "subtitle",
       "label": "Subtitle",
-      "default": "Engineered to elevate your grip, forearm strength, and joint health."
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Collection"
+      "default": "Select your performance gear below with 30-day money-back guarantee."
     }
   ],
   "presets": [
