@@ -11,7 +11,14 @@
   "sections": {
     "hero": {
       "type": "hero",
-      "settings": {}
+      "settings": {
+        "badge_text": "FLAGSHIP SERIES • EAGLE CLAW & LEVER BELT",
+        "heading": "FORGE UNBREAKABLE",
+        "heading_gradient": "GRIP & CORE POWER",
+        "subheading": "Engineered for athletes who demand maximum strength. Dominate your training with the 5-Finger Eagle Claw Gripper and Heavy-Duty 10mm Powerlifting Lever Belt.",
+        "button_label": "EXPLORE THE 2 ESSENTIALS",
+        "button_link": "shopify://collections/all"
+      }
     },
     "marquee": {
       "type": "marquee",
@@ -19,11 +26,24 @@
     },
     "features": {
       "type": "features",
-      "settings": {}
+      "settings": {
+        "feature_1_heading": "Eagle Claw 5-Finger Spring Strengthener",
+        "feature_1_desc": "5 independent spring-loaded finger pistons in an arched mechanical claw frame.",
+        "feature_1_button_label": "Shop Eagle Claw",
+        "feature_1_button_link": "",
+        "feature_2_heading": "Heavy-Duty 10mm Powerlifting Lever Belt",
+        "feature_2_desc": "Premium genuine leather with a heavy-duty stainless steel quick-release lever.",
+        "feature_2_button_label": "Shop 2 Essentials",
+        "feature_2_button_link": ""
+      }
     },
     "about": {
       "type": "about",
-      "settings": {}
+      "settings": {
+        "tag": "OUR MISSION",
+        "title": "ENGINEERED FOR THE UNRELENTING",
+        "text": "At Ironivo, we believe physical capability starts with the hands. We obsess over biometric resistance curves, military-grade materials, and biomechanical ergonomics so you never miss a lift, drop a hold, or compromise your potential."
+      }
     },
     "reviews": {
       "type": "reviews",
